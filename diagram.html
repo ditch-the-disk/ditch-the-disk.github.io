@@ -54,11 +54,12 @@
   .fig .chip-n { fill: var(--surface-2); }
   .fig .chip-n + text { fill: var(--ink-2); }
   .fig .region { fill: var(--surface); stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 5 4; }
-  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 30px 0 0; }
+  .three { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 30px 0 0; }
   .three div { border-top: 3px solid var(--line); padding-top: 10px; font-size: 15px; color: var(--ink-2); }
   .three div.key { border-top-color: var(--accent); }
   .three b { display: block; color: var(--ink); font-size: 15px; margin-bottom: 4px; }
-  @media (max-width: 640px) { .three { grid-template-columns: 1fr; } }
+  @media (max-width: 760px) { .three { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .three { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -120,6 +121,7 @@
 
 <div class="three">
   <div><b>Works today</b>Patient apps get clinical data from any certified EHR through the organization's own sign-in.</div>
+  <div><b>In progress</b>Reaching that same door through a network. Aligned Networks are beginning to bring patient apps in with an identity verified once, instead of a sign-in at every organization.</div>
   <div class="key"><b>Missing</b>Images behind that same sign-in. The pledge names the parts: FHIR ImagingStudy, DICOMweb, SMART Imaging Access. No organization has it running yet.</div>
   <div><b>First step</b>One app, one organization: clinical data and images with one permission. Then let networks bring patients to that door without a separate sign-in.</div>
 </div>
