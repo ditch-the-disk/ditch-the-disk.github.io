@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One Front Door</title>
+<meta name="description" content="Put images behind the same front door patient apps already use for clinical data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Spectral:wght@600&display=swap">
+<style>
+  :root {
+    --paper: #FAFBFC; --surface: #F1F4F7; --surface-2: #E7ECF1;
+    --ink: #1C2733; --ink-2: #4C5A68; --ink-3: #71808F;
+    --line: #C9D2DB;
+    --accent: #0E7B8C; --accent-soft: #D9EDF1; --accent-ink: #0A5D6B;
+    --sans: "Public Sans", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --serif: "Spectral", Georgia, "Times New Roman", serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #131A22; --surface: #1B242E; --surface-2: #232E3A;
+      --ink: #E7EDF3; --ink-2: #A9B6C3; --ink-3: #7E8C9A;
+      --line: #37434F;
+      --accent: #3FAABC; --accent-soft: #143540; --accent-ink: #7BC9D6;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #131A22; --surface: #1B242E; --surface-2: #232E3A;
+    --ink: #E7EDF3; --ink-2: #A9B6C3; --ink-3: #7E8C9A;
+    --line: #37434F;
+    --accent: #3FAABC; --accent-soft: #143540; --accent-ink: #7BC9D6;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 17px; line-height: 1.6; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 22px 72px; }
+  header.doc { padding: 52px 0 16px; border-bottom: 1px solid var(--line); margin-bottom: 26px; }
+  .kicker { font-size: 12.5px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--accent-ink); margin: 0 0 12px; }
+  h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(30px, 4.6vw, 40px); line-height: 1.12; margin: 0 0 12px; letter-spacing: -.01em; text-wrap: balance; }
+  .abstract { font-size: 18px; color: var(--ink-2); margin: 0; max-width: 60ch; }
+  figure { margin: 18px 0 8px; }
+  figure svg { max-width: 100%; height: auto; display: block; }
+  figcaption { font-size: 15px; color: var(--ink-2); max-width: 66ch; margin: 12px 0 0; line-height: 1.5; }
+  .fig text { font-family: var(--sans); }
+  .fig .t-title { font-size: 14px; font-weight: 700; fill: var(--ink); }
+  .fig .t-body  { font-size: 12px; fill: var(--ink-2); }
+  .fig .t-small { font-size: 11px; fill: var(--ink-3); }
+  .fig .t-chip  { font-size: 10.5px; font-weight: 700; }
+  .fig .box     { fill: var(--paper); stroke: var(--line); stroke-width: 1.3; }
+  .fig .box-key { fill: var(--paper); stroke: var(--accent); stroke-width: 2; }
+  .fig .fa { stroke: var(--accent); stroke-width: 2.2; fill: none; }
+  .fig .ma { fill: var(--accent); }
+  .fig .chip-a { fill: var(--accent-soft); }
+  .fig .chip-a + text { fill: var(--accent-ink); }
+  .fig .chip-n { fill: var(--surface-2); }
+  .fig .chip-n + text { fill: var(--ink-2); }
+  .fig .region { fill: var(--surface); stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 5 4; }
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 30px 0 0; }
+  .three div { border-top: 3px solid var(--line); padding-top: 10px; font-size: 15px; color: var(--ink-2); }
+  .three div.key { border-top-color: var(--accent); }
+  .three b { display: block; color: var(--ink); font-size: 15px; margin-bottom: 4px; }
+  @media (max-width: 640px) { .three { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="doc">
+  <p class="kicker">CMS Health Tech Ecosystem · Diagnostic Imaging Workgroup</p>
+  <h1>One Front Door</h1>
+  <p class="abstract">Every organization already has one front door its patients' apps use for clinical data. Put images behind that same door.</p>
+</header>
+
+<figure>
+<svg class="fig" viewBox="0 0 900 300" role="img" aria-label="A patient's app reaches an organization's single front door either directly or through a network. Behind the door are clinical data, which works today, and images, which is what to build. Both come from the same organization and the same PACS.">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ma"/></marker>
+  </defs>
+
+  <!-- the patient's app -->
+  <rect x="30" y="66" width="190" height="60" rx="7" class="box"/>
+  <text x="125" y="92" text-anchor="middle" class="t-title">A patient's app</text>
+  <text x="125" y="110" text-anchor="middle" class="t-small">the patient signs in</text>
+
+  <!-- route 1: directly -->
+  <polyline points="220,96 300,96 300,146 368,146" class="fa" marker-end="url(#arr)"/>
+  <text x="260" y="88" text-anchor="middle" class="t-small">directly</text>
+
+  <!-- route 2: through a network -->
+  <polyline points="125,126 125,226 148,226" class="fa" marker-end="url(#arr)"/>
+  <text x="133" y="172" text-anchor="start" class="t-small">or through</text>
+  <text x="133" y="186" text-anchor="start" class="t-small">a network</text>
+  <rect x="150" y="196" width="170" height="60" rx="7" class="box"/>
+  <text x="235" y="222" text-anchor="middle" class="t-title">A network</text>
+  <text x="235" y="240" text-anchor="middle" class="t-small">identity verified once</text>
+  <polyline points="320,226 340,226 340,176 368,176" class="fa" marker-end="url(#arr)"/>
+
+  <!-- the door -->
+  <rect x="370" y="108" width="240" height="106" rx="8" class="box-key"/>
+  <text x="490" y="140" text-anchor="middle" class="t-title">The organization's</text>
+  <text x="490" y="158" text-anchor="middle" class="t-title">front door</text>
+  <text x="490" y="180" text-anchor="middle" class="t-body">sign in once · one permission</text>
+  <text x="490" y="197" text-anchor="middle" class="t-small">the organization decides who sees what</text>
+
+  <!-- what's behind it -->
+  <rect x="676" y="48" width="214" height="240" rx="10" class="region"/>
+  <text x="783" y="276" text-anchor="middle" class="t-small">same organization · same PACS</text>
+  <rect x="690" y="66" width="186" height="60" rx="7" class="box"/>
+  <text x="783" y="90" text-anchor="middle" class="t-title">Clinical data</text>
+  <rect x="741" y="99" width="84" height="18" rx="9" class="chip-n"/><text x="783" y="112" text-anchor="middle" class="t-chip">works today</text>
+  <rect x="690" y="196" width="186" height="60" rx="7" class="box-key"/>
+  <text x="783" y="220" text-anchor="middle" class="t-title">Images</text>
+  <rect x="746" y="229" width="74" height="18" rx="9" class="chip-a"/><text x="783" y="242" text-anchor="middle" class="t-chip">build this</text>
+
+  <!-- behind the door -->
+  <polyline points="610,146 650,146 650,96 688,96" class="fa" marker-end="url(#arr)"/>
+  <polyline points="610,176 650,176 650,226 688,226" class="fa" marker-end="url(#arr)"/>
+</svg>
+<figcaption>A patient's app reaches the organization directly today; networks are starting to bring it there without a separate sign-in. Either way it arrives at the same door. Clinical data is already behind it. Put images there too.</figcaption>
+</figure>
+
+<div class="three">
+  <div><b>Works today</b>Patient apps get clinical data from any certified EHR through the organization's own sign-in.</div>
+  <div class="key"><b>Missing</b>Images behind that same sign-in. The pledge names the parts: FHIR ImagingStudy, DICOMweb, SMART Imaging Access. No organization has it running yet.</div>
+  <div><b>First step</b>One app, one organization: clinical data and images with one permission. Then let networks bring patients to that door without a separate sign-in.</div>
+</div>
+</div>
+</body>
+</html>
