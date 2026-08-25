@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ditch the Disk Diagram</title>
+<title>Ditch the Disk with SMART Imaging Access</title>
 <meta name="description" content="Put images behind the same front door patient apps already use for clinical data.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Spectral:wght@600&display=swap">
@@ -65,12 +65,12 @@
 <div class="wrap">
 <header class="doc">
   <p class="kicker">CMS Health Tech Ecosystem · Diagnostic Imaging Workgroup</p>
-  <h1>Ditch the Disk Diagram</h1>
+  <h1>Ditch the Disk with SMART Imaging Access</h1>
   <p class="abstract">Every organization already has one front door its patients' apps use for clinical data. Put images behind that same door.</p>
 </header>
 
 <figure>
-<svg class="fig" viewBox="0 0 900 300" role="img" aria-label="A patient's app reaches an organization's single front door either directly or through a network. Behind the door are clinical data, which works today, and images, which is what to build. Both come from the same organization and the same PACS.">
+<svg class="fig" viewBox="0 0 900 312" role="img" aria-label="A patient's app reaches an organization's single front door either directly or through a network. Behind the door are clinical data, which works today, and images, which is what to build. Both come from the same organization and the same PACS.">
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ma"/></marker>
   </defs>
@@ -101,18 +101,19 @@
   <text x="490" y="197" text-anchor="middle" class="t-small">the organization decides who sees what</text>
 
   <!-- what's behind it -->
-  <rect x="676" y="48" width="214" height="240" rx="10" class="region"/>
-  <text x="783" y="276" text-anchor="middle" class="t-small">same organization · same PACS</text>
+  <rect x="676" y="48" width="214" height="252" rx="10" class="region"/>
+  <text x="783" y="288" text-anchor="middle" class="t-small">same organization · same PACS</text>
   <rect x="690" y="66" width="186" height="60" rx="7" class="box"/>
   <text x="783" y="90" text-anchor="middle" class="t-title">Clinical data</text>
   <rect x="741" y="99" width="84" height="18" rx="9" class="chip-n"/><text x="783" y="112" text-anchor="middle" class="t-chip">works today</text>
-  <rect x="690" y="196" width="186" height="60" rx="7" class="box-key"/>
-  <text x="783" y="220" text-anchor="middle" class="t-title">Images</text>
-  <rect x="746" y="229" width="74" height="18" rx="9" class="chip-a"/><text x="783" y="242" text-anchor="middle" class="t-chip">build this</text>
+  <rect x="690" y="196" width="186" height="72" rx="7" class="box-key"/>
+  <text x="783" y="216" text-anchor="middle" class="t-title">Images</text>
+  <text x="783" y="232" text-anchor="middle" class="t-small">SMART Imaging Access</text>
+  <rect x="746" y="240" width="74" height="18" rx="9" class="chip-a"/><text x="783" y="253" text-anchor="middle" class="t-chip">build this</text>
 
   <!-- behind the door -->
   <polyline points="610,146 650,146 650,96 688,96" class="fa" marker-end="url(#arr)"/>
-  <polyline points="610,176 650,176 650,226 688,226" class="fa" marker-end="url(#arr)"/>
+  <polyline points="610,176 650,176 650,232 688,232" class="fa" marker-end="url(#arr)"/>
 </svg>
 <figcaption>A patient's app reaches the organization directly today; networks are starting to bring it there without a separate sign-in. Either way it arrives at the same door. Clinical data is already behind it. Put images there too.</figcaption>
 </figure>
