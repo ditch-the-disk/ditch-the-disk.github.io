@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CMS Health Tech Ecosystem · Diagnostic Imaging Workgroup</title>
+<style>
+  :root {
+    --paper:#FAFBFC;
+    --card:#FFFFFF;
+    --line:#DDE4EA;
+    --grid:#C9D2DB;
+    --ink:#1C2733;
+    --muted:#4C5A68;
+    --data:#71808F;
+    --teal:#0E7B8C;
+    --teal-soft:#E6F4F6;
+    --blue:#1D4ED8;
+    --blue-soft:#EFF6FF;
+    --ochre:#B45309;
+    --ochre-soft:#FEF3C7;
+    --shadow:0 18px 50px rgba(28,39,51,.09), 0 2px 8px rgba(28,39,51,.05);
+    --radius:18px;
+  }
+
+  * { box-sizing:border-box; }
+  html, body { height:100%; }
+  body {
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    overflow:hidden;
+  }
+
+  button { font:inherit; }
+
+  .app {
+    height:100vh;
+    height:100dvh;
+  }
+
+  .stage {
+    position:relative;
+    width:100%;
+    height:100%;
+  }
+
+  .deck-frame {
+    position:relative;
+    width:100%;
+    height:100%;
+  }
+
+  .slide {
+    position:absolute;
+    inset:0;
+    display:none;
+    overflow:hidden;
+    background:var(--paper);
+    padding:clamp(38px, 4.2vh, 68px) clamp(48px, 6vw, 120px) clamp(42px, 5vh, 76px);
+  }
+
+  .slide.active { display:flex; flex-direction:column; }
+
+  .slide::after {
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+      linear-gradient(90deg, transparent 0, transparent calc(100% - 1px), rgba(28,39,51,.02) calc(100% - 1px)),
+      linear-gradient(0deg, transparent 0, transparent calc(100% - 1px), rgba(28,39,51,.02) calc(100% - 1px));
+    background-size:54px 54px;
+    opacity:.22;
+  }
+
+  .slide > * { position:relative; z-index:1; }
+
+  .eyebrow {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+    color:var(--data);
+    font-size:clamp(12px, .82vw, 16px);
+    font-weight:700;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    margin-bottom:2.2%;
+  }
+
+  .title {
+    margin:0;
+    max-width:92%;
+    font-size:clamp(34px, 3.2vw, 68px);
+    line-height:1.02;
+    letter-spacing:-.045em;
+    font-weight:760;
+  }
+
+  .subtitle {
+    margin:1.05% 0 0;
+    color:var(--muted);
+    font-size:clamp(15px, 1.3vw, 25px);
+    line-height:1.35;
+    max-width:84%;
+  }
+
+  .rule { height:1px; background:var(--line); margin:2.15% 0 2.55%; }
+
+  .label {
+    font-size:clamp(13px, .88vw, 17px);
+    color:var(--data);
+    text-transform:uppercase;
+    letter-spacing:.1em;
+    font-weight:760;
+  }
+
+  .metric {
+    font-variant-numeric: tabular-nums;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  .card {
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:18px 20px;
+  }
+
+  .card h3 {
+    margin:0 0 8px;
+    font-size:clamp(17px, 1.48vw, 28px);
+    letter-spacing:-.02em;
+  }
+
+  .card p, .card li {
+    font-size:clamp(17px, 1.18vw, 23px);
+    line-height:1.42;
+  }
+
+  .card p { margin:0; color:var(--muted); }
+  .card ul { margin:8px 0 0; padding-left:1.1em; color:var(--muted); }
+  .card li { margin:.3em 0; }
+
+  .teal-card { background:var(--teal-soft); border-color:#B8DDE2; }
+  .blue-card { background:var(--blue-soft); border-color:#C9D8FD; }
+  .ochre-card { background:var(--ochre-soft); border-color:#F2D09A; }
+
+  .callout {
+    border:1px solid #B8DDE2;
+    background:var(--teal-soft);
+    border-radius:14px;
+    padding:16px 20px;
+    font-size:clamp(17px, 1.4vw, 27px);
+    line-height:1.32;
+    font-weight:690;
+  }
+
+  .bar-list { display:grid; gap:12px; }
+  .bar-row {
+    display:grid;
+    grid-template-columns:minmax(155px, 1.8fr) 54px 72px 3.2fr;
+    gap:12px;
+    align-items:center;
+    font-size:clamp(17px, 1.18vw, 23px);
+  }
+  .bar-row .name { font-weight:650; }
+  .bar-row .n, .bar-row .pct { color:var(--data); text-align:right; }
+  .track { height:12px; background:#EDF1F4; border-radius:99px; overflow:hidden; }
+  .fill { height:100%; background:var(--teal); border-radius:99px; width:var(--w); }
+  .fill.ochre { background:var(--ochre); }
+
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:3.6%; min-height:0; }
+  .two-col.compact { gap:2.7%; }
+  .four-grid { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:auto auto; gap:18px; min-height:0; align-content:center; }
+  .four-grid .card { align-self:start; padding:clamp(18px, 1.35vw, 26px); }
+
+  .section-head {
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:18px;
+    margin-bottom:14px;
+  }
+  .section-head h3 { margin:0; font-size:clamp(16px, 1.3vw, 25px); letter-spacing:-.015em; }
+  .section-head span { color:var(--data); font-size:clamp(13px, .85vw, 16px); }
+
+  .data-table {
+    width:100%;
+    border-collapse:collapse;
+    font-size:clamp(16px, 1.08vw, 21px);
+  }
+  .data-table th {
+    text-align:left;
+    color:var(--data);
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    font-size:.84em;
+    border-bottom:1px solid var(--grid);
+    padding:0 8px 12px;
+  }
+  .data-table td {
+    padding:11px 8px;
+    border-bottom:1px solid #EDF1F4;
+    vertical-align:middle;
+  }
+  .data-table td.num { text-align:right; color:var(--data); font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .data-table .quote { color:var(--muted); font-size:.92em; }
+  .risk-dot { display:inline-block; width:8px; height:8px; background:var(--ochre); border-radius:50%; margin-right:7px; }
+
+  .response-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px 28px; }
+  .response-item { display:flex; gap:11px; align-items:flex-start; font-size:clamp(16px, 1.02vw, 20px); line-height:1.4; }
+  .response-item b { flex:0 0 24px; color:var(--teal); font-family:ui-monospace, monospace; }
+
+  .arch3 { display:grid; grid-template-columns:1.05fr 1fr 1.15fr; gap:3%; align-items:center; min-height:0; }
+  .arch-box { border:1px solid var(--line); border-radius:14px; background:white; padding:16px 17px; position:relative; }
+  .arch-box.blue { background:var(--blue-soft); border-color:#BFD0FA; }
+  .arch-box.teal { background:var(--teal-soft); border-color:#B8DDE2; }
+  .slide-architecture .arch-box:nth-child(-n+2)::after {
+    content:"→";
+    position:absolute;
+    top:50%;
+    right:-7%;
+    color:#9AA8B5;
+    font-size:clamp(22px, 1.8vw, 34px);
+    font-weight:500;
+    line-height:1;
+    transform:translateY(-50%);
+  }
+  .arch-box h3 { margin:0 0 10px; font-size:clamp(16px, 1.32vw, 25px); }
+  .arch-box .sub { color:var(--data); font-size:clamp(14px,.86vw,16px); margin-bottom:10px; }
+  .arch-box ul { margin:0; padding-left:1.1em; }
+  .arch-box li { font-size:clamp(16px, 1.08vw, 21px); line-height:1.42; margin:.35em 0; }
+  .arch-arrow { display:grid; place-items:center; color:var(--grid); font-size:clamp(24px, 3vw, 48px); }
+  .arch-note { margin-top:14px; padding-top:12px; border-top:1px solid var(--line); color:var(--muted); font-size:clamp(15px,1vw,19px); }
+
+  .stack { display:grid; gap:8px; }
+  .mini {
+    border:1px solid var(--line);
+    background:white;
+    border-radius:10px;
+    padding:10px 12px;
+  }
+  .mini b { display:block; font-size:clamp(16px,1.08vw,21px); margin-bottom:3px; }
+  .mini span { color:var(--muted); font-size:clamp(15px,.92vw,18px); }
+
+  .trust-layout { display:grid; grid-template-rows:auto auto; align-content:center; gap:clamp(18px, 3vh, 34px); min-height:0; }
+  .service-block { background:var(--teal-soft); border:1px solid #B8DDE2; border-radius:14px; padding:14px 18px; text-align:center; }
+  .service-block h3 { margin:0 0 4px; font-size:clamp(18px,1.48vw,28px); }
+  .service-block p { margin:0; color:var(--muted); font-size:clamp(16px,1vw,20px); }
+  .path-grid { display:grid; grid-template-columns:1fr 1fr; gap:3%; position:relative; }
+  .path-card { border:1px solid var(--line); background:#fff; border-radius:14px; padding:16px 18px; }
+  .path-card h3 { margin:0 0 10px; font-size:clamp(16px,1.22vw,23px); }
+  .path-card ul { margin:0; padding-left:1.1em; }
+  .path-card li { font-size:clamp(16px,1.08vw,21px); line-height:1.4; margin:.32em 0; }
+  .path-card.direct { border-top:4px solid var(--blue); }
+  .path-card.network { border-top:4px solid var(--teal); }
+
+  .scope-grid { display:grid; grid-template-columns:1.1fr .9fr; gap:3%; align-items:center; min-height:0; }
+  .scope-panel { border:1px solid var(--line); background:#fff; border-radius:14px; padding:16px 18px; }
+  .scope-panel.ours { border:2px solid var(--teal); }
+  .scope-panel h3 { margin:0 0 10px; font-size:clamp(16px,1.3vw,25px); }
+  .scope-item { display:grid; grid-template-columns:20px 1fr; gap:8px; margin:10px 0; }
+  .scope-item .check { color:var(--teal); font-weight:800; }
+  .scope-item b { display:block; font-size:clamp(16px,1.08vw,21px); }
+  .scope-item span { display:block; color:var(--muted); font-size:clamp(15px,.95vw,19px); margin-top:2px; }
+  .complement { margin-top:2.1%; border:1px solid var(--line); background:#F3F5F7; border-radius:12px; padding:13px 17px; color:var(--muted); font-size:clamp(15px,.98vw,19px); line-height:1.38; }
+  .complement b { color:var(--ink); }
+
+  .pledge-intro { display:flex; align-items:center; justify-content:space-between; gap:24px; margin:1.7% 0 2.4%; }
+  .pledge-intro .statement { font-size:clamp(15px,1.28vw,24px); color:var(--muted); max-width:72%; line-height:1.32; }
+  .pill { border:1px solid #B8DDE2; background:var(--teal-soft); color:var(--teal); padding:8px 12px; border-radius:999px; font-size:clamp(13px,.82vw,16px); font-weight:760; white-space:nowrap; }
+  .role-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.3%; align-items:start; min-height:0; }
+  .role { border:1px solid var(--line); border-radius:12px; background:#fff; padding:13px 13px 12px; }
+  .role h3 { margin:0 0 3px; font-size:clamp(17px,1.12vw,22px); }
+  .role .role-sub { color:var(--data); font-size:clamp(14px,.9vw,17px); margin-bottom:8px; }
+  .role ul { margin:0; padding-left:1em; }
+  .role li { font-size:clamp(15px,.93vw,18px); line-height:1.35; margin:.3em 0; }
+  .target { margin-top:8px; border-top:1px solid var(--line); padding-top:7px; color:var(--teal); font-size:clamp(15px,.93vw,18px); font-weight:800; }
+  .network-band { margin-top:1.7%; border:1px solid #C9D8FD; background:var(--blue-soft); border-radius:12px; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:18px; }
+  .network-band b { color:var(--blue); font-size:clamp(14px,.9vw,17px); white-space:nowrap; }
+  .network-band span { color:var(--muted); font-size:clamp(14px,.9vw,17px); line-height:1.3; }
+  .action-line { margin-top:1.6%; padding-top:1.35%; border-top:1px solid var(--grid); font-size:clamp(17px,1.17vw,22px); font-weight:760; }
+
+  .footer-note {
+    position:absolute;
+    left:6%; right:6%; bottom:2.1%;
+    color:var(--data);
+    font-size:clamp(9px,.68vw,13px);
+    letter-spacing:.02em;
+  }
+
+  /* Let each slide's information determine the composition. Auto margins center
+     the content block without stretching short cards into empty containers. */
+  .slide-participants > .bar-list { margin-top:auto !important; gap:clamp(15px, 2.1vh, 25px); }
+  .slide-participants > .card { margin-top:clamp(28px, 4vh, 46px) !important; margin-bottom:auto; }
+
+  .slide-current-state > .two-col { flex:0 0 auto !important; margin-top:auto; }
+  .slide-current-state > .callout { margin-top:clamp(30px, 4.5vh, 52px) !important; margin-bottom:auto; }
+
+  .slide-risks > .data-table { margin-top:auto; }
+  .slide-risks > .card { margin-top:clamp(28px, 4vh, 46px) !important; margin-bottom:auto; }
+
+  .slide-architecture > .arch3 { flex:0 0 auto !important; margin-top:auto; }
+  .slide-architecture > .callout { margin-top:clamp(28px, 4vh, 46px) !important; margin-bottom:auto; }
+
+  .slide-scope > .scope-grid { flex:0 0 auto !important; margin-top:auto; }
+  .slide-scope > .complement { margin-top:clamp(22px, 3vh, 36px); margin-bottom:auto; }
+
+  .slide-deliverable > .pledge-intro { margin-top:auto !important; }
+  .slide-deliverable > .action-line { margin-bottom:auto; }
+
+  .controls {
+    position:fixed;
+    inset:0;
+    z-index:40;
+    pointer-events:none;
+  }
+  .nav-left, .nav-right { display:contents; }
+  .control-btn {
+    border:1px solid var(--grid);
+    background:rgba(255,255,255,.86);
+    color:var(--ink);
+    border-radius:9px;
+    min-height:30px;
+    padding:0 9px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    box-shadow:0 2px 8px rgba(28,39,51,.08);
+    pointer-events:auto;
+    transition:opacity .16s ease, background .16s ease, border-color .16s ease;
+  }
+  .control-btn:hover { border-color:#9DAAB7; background:#fff; opacity:1; }
+  .control-btn:focus-visible { outline:3px solid rgba(29,78,216,.18); outline-offset:2px; }
+  .control-btn[disabled] { opacity:0; pointer-events:none; }
+  #prevBtn, #nextBtn {
+    position:absolute;
+    top:50%;
+    width:30px;
+    height:54px;
+    min-height:0;
+    padding:0;
+    border:0;
+    border-radius:8px;
+    background:rgba(76,90,104,.08);
+    box-shadow:none;
+    color:var(--muted);
+    font-size:23px;
+    opacity:.22;
+    transform:translateY(-50%);
+  }
+  #prevBtn { left:7px; }
+  #nextBtn { right:7px; }
+  #prevBtn:hover, #nextBtn:hover { background:rgba(255,255,255,.94); opacity:.9; }
+  #prevBtn span, #nextBtn span { display:none; }
+  .nav-progress {
+    position:absolute;
+    left:50%;
+    bottom:9px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:5px 8px;
+    border-radius:999px;
+    background:rgba(255,255,255,.58);
+    opacity:.48;
+    transform:translateX(-50%);
+    transition:opacity .16s ease, background .16s ease;
+    pointer-events:auto;
+  }
+  .nav-progress:hover, .nav-progress:focus-within { background:rgba(255,255,255,.94); opacity:1; }
+  .count { color:var(--muted); font-size:11px; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .dots { display:flex; gap:6px; align-items:center; justify-content:center; }
+  .dot {
+    width:7px; height:7px; border-radius:50%;
+    border:1px solid #AEB9C4; background:transparent; padding:0; cursor:pointer;
+  }
+  .dot.active { background:var(--teal); border-color:var(--teal); transform:scale(1.15); }
+  .dot:focus-visible { outline:3px solid rgba(29,78,216,.18); outline-offset:3px; }
+  #overviewBtn, #notesBtn {
+    position:absolute;
+    bottom:9px;
+    width:30px;
+    height:30px;
+    min-height:0;
+    padding:0;
+    font:700 11px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    opacity:.32;
+  }
+  #overviewBtn { right:45px; }
+  #notesBtn { right:9px; }
+  .key { display:none; }
+
+  .notes-panel {
+    position:fixed;
+    top:18px; right:18px; bottom:18px;
+    width:min(410px, 38vw);
+    background:rgba(255,255,255,.98);
+    border:1px solid var(--grid);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    padding:18px 18px 16px;
+    transform:translateX(calc(100% + 30px));
+    transition:transform .22s ease;
+    z-index:50;
+    overflow:auto;
+  }
+  .notes-panel.open { transform:translateX(0); }
+  .notes-head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px; }
+  .notes-head h2 { margin:0; font-size:16px; }
+  .notes-body { color:var(--muted); font-size:14px; line-height:1.55; white-space:pre-line; }
+  .close-notes { border:0; background:transparent; color:var(--muted); cursor:pointer; font-size:20px; }
+
+  .overview {
+    position:fixed; inset:0; z-index:60; display:none;
+    background:rgba(238,242,245,.97);
+    overflow:auto; padding:28px;
+  }
+  .overview.open { display:block; }
+  .overview-head { display:flex; justify-content:space-between; align-items:center; margin:0 auto 20px; max-width:1280px; }
+  .overview-head h2 { margin:0; font-size:22px; }
+  .overview .control-btn { position:static; width:auto; height:34px; padding:0 12px; opacity:1; font:inherit; }
+  .overview-grid { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+  .thumb {
+    position:relative;
+    min-height:150px;
+    border:1px solid var(--grid);
+    border-radius:12px;
+    background:#fff;
+    padding:24px;
+    display:grid;
+    grid-template-columns:auto 1fr;
+    align-items:center;
+    gap:20px;
+    cursor:pointer;
+    box-shadow:0 8px 24px rgba(28,39,51,.06);
+  }
+  .thumb:hover { border-color:var(--teal); }
+  .thumb-number { color:var(--teal); font:800 34px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .thumb-title { margin:0; font-size:23px; line-height:1.15; letter-spacing:-.025em; }
+
+  @media (max-width:760px) {
+    .slide { padding:26px 34px 38px; }
+    .nav-progress .dots { display:none; }
+    #prevBtn { left:2px; }
+    #nextBtn { right:2px; }
+    .slide-architecture .arch-box:nth-child(-n+2)::after { display:none; }
+    .overview-grid { grid-template-columns:1fr; }
+    .notes-panel { width:calc(100vw - 24px); right:12px; top:12px; bottom:12px; }
+  }
+
+  @media print {
+    body { overflow:visible; background:white; }
+    .app { display:block; }
+    .stage { display:block; padding:0; }
+    .deck-frame { width:auto; max-height:none; aspect-ratio:auto; }
+    .slide { position:relative; display:flex !important; flex-direction:column; width:13.333in; height:7.5in; border:0; border-radius:0; box-shadow:none; break-after:page; }
+    .controls, .notes-panel, .overview { display:none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <main class="stage" aria-live="polite">
+    <div class="deck-frame" id="deckFrame">
+
+      <section class="slide slide-participants active" data-title="Who is in the workgroup" data-notes="We had 22 respondents to the baseline survey. Half represent health systems or imaging organizations that hold and serve the data. The other half includes app developers, standards and policy groups, EHR developers, and identity providers.\n\nThree participants also identified as active patients or family caregivers. We have enough of the relevant roles in the room to define a useful scope. We do not need every organization to implement every piece. We need a clear target and a small set of implementers in each role.">
+        <div class="eyebrow"><span>CMS Health Tech Ecosystem · Diagnostic Imaging Workgroup</span><span>Sep 8, 2026</span></div>
+        <h1 class="title">Who is in the workgroup</h1>
+        <p class="subtitle">Workgroup baseline · 22 respondents</p>
+        <div class="rule"></div>
+        <div class="bar-list" style="margin-top:.4%">
+          <div class="bar-row"><div class="name">Health Systems / Imaging</div><div class="n metric">11</div><div class="pct metric">50.0%</div><div class="track"><div class="fill" style="--w:100%"></div></div></div>
+          <div class="bar-row"><div class="name">App / Software Developers</div><div class="n metric">5</div><div class="pct metric">22.7%</div><div class="track"><div class="fill" style="--w:45.4%"></div></div></div>
+          <div class="bar-row"><div class="name">Standards, Policy & Research</div><div class="n metric">4</div><div class="pct metric">18.2%</div><div class="track"><div class="fill" style="--w:36.4%"></div></div></div>
+          <div class="bar-row"><div class="name">Certified EHR Developers</div><div class="n metric">1</div><div class="pct metric">4.5%</div><div class="track"><div class="fill" style="--w:9%"></div></div></div>
+          <div class="bar-row"><div class="name">Identity Providers</div><div class="n metric">1</div><div class="pct metric">4.5%</div><div class="track"><div class="fill" style="--w:9%"></div></div></div>
+        </div>
+        <div class="card blue-card" style="margin-top:auto; padding:14px 18px; display:flex; align-items:center; justify-content:space-between; gap:18px;">
+          <div><span class="label" style="color:var(--blue)">Patient / caregiver perspective</span><div style="margin-top:4px; font-size:clamp(17px,1.08vw,21px); font-weight:700;">3 participants also identified as active patients or family caregivers.</div></div>
+          <div class="metric" style="font-size:clamp(22px,2.35vw,40px); color:var(--blue); font-weight:800;">13.6%</div>
+        </div>
+      </section>
+
+      <section class="slide slide-current-state" data-title="Health systems have APIs. Imaging still moves by disk." data-notes="This is not mainly an infrastructure problem. More than 80% of the responding health systems run certified EHRs, and almost two-thirds report an active FHIR API.\n\nAt the same time, 83% of patient-facing sites still routinely use CDs or DVDs. Half offer a viewer link, and automated app ingestion is uncommon.\n\nThe useful signal is the overlap: 78% of the health systems in this group that still burn CDs already have a clinical FHIR API. The clinical API pattern already exists. Our question is how imaging joins it without forcing images through the EHR itself.">
+        <div class="eyebrow"><span>CMS Health Tech Ecosystem · Diagnostic Imaging Workgroup</span><span>Current state</span></div>
+        <h1 class="title">Health systems have APIs. Imaging still moves by disk.</h1>
+        <div class="rule"></div>
+        <div class="two-col" style="flex:1; align-items:start;">
+          <div>
+            <div class="section-head"><h3>What health systems have</h3><span>n=11</span></div>
+            <div class="bar-list" style="gap:16px">
+              <div class="bar-row" style="grid-template-columns:1.65fr 65px 2.8fr"><div class="name">Certified EHR</div><div class="pct metric">81.8%</div><div class="track"><div class="fill" style="--w:81.8%"></div></div></div>
+              <div class="bar-row" style="grid-template-columns:1.65fr 65px 2.8fr"><div class="name">Active FHIR API</div><div class="pct metric">63.6%</div><div class="track"><div class="fill" style="--w:63.6%"></div></div></div>
+              <div class="bar-row" style="grid-template-columns:1.65fr 65px 2.8fr"><div class="name">Direct App Connect</div><div class="pct metric">45.5%</div><div class="track"><div class="fill" style="--w:45.5%"></div></div></div>
+              <div class="bar-row" style="grid-template-columns:1.65fr 65px 2.8fr"><div class="name">Network Trust Enabled</div><div class="pct metric">27.3%</div><div class="track"><div class="fill" style="--w:27.3%"></div></div></div>
+            </div>
+          </div>
+          <div>
+            <div class="section-head"><h3>How images are delivered today</h3><span>n=18</span></div>
+            <div class="bar-list" style="gap:16px">
+              <div class="bar-row" style="grid-template-columns:1.65fr 65px 2.8fr"><div class="name">Physical CD/DVD</div><div class="pct metric">83.3%</div><div class="track"><div class="fill ochre" style="--w:83.3%"></div></div></div>
+              <div class="bar-row" style="grid-template-columns:1.65fr 65px 2.8fr"><div class="name">Online Viewer Link</div><div class="pct metric">50.0%</div><div class="track"><div class="fill" style="--w:50%"></div></div></div>
+              <div class="bar-row" style="grid-template-columns:1.65fr 65px 2.8fr"><div class="name">Portal (lossy pic/PDF)</div><div class="pct metric">27.8%</div><div class="track"><div class="fill" style="--w:27.8%"></div></div></div>
+              <div class="bar-row" style="grid-template-columns:1.65fr 65px 2.8fr"><div class="name">Automated App Ingestion</div><div class="pct metric">16.7%</div><div class="track"><div class="fill" style="--w:16.7%"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:2.4%"><span class="metric" style="color:var(--teal); font-size:1.55em; margin-right:.25em">78%</span> of health systems in this group that still burn CDs already run an active FHIR API for clinical data.</div>
+      </section>
+
+      <section class="slide slide-success" data-title="What success looks like" data-notes="People described success in three practical ways. Operations teams want routine disk burning to stop. Clinicians want prior studies before the patient arrives. Patients and app developers want the full study, not a screenshot or a PDF.\n\nThese needs do not require three image-exchange formats. A common imaging service can expose study metadata through FHIR ImagingStudy and full-fidelity images through DICOMweb. Patient and provider workflows may use different authorization paths, but they should not require different imaging representations.">
+        <div class="eyebrow"><span>CMS Health Tech Ecosystem · Diagnostic Imaging Workgroup</span><span>Success criteria</span></div>
+        <h1 class="title">What success looks like</h1>
+        <div class="rule"></div>
+        <div class="four-grid" style="flex:1">
+          <article class="card"><span class="label">1 · Operations · 27.3%</span><h3>Stop routine disk use</h3><ul><li>Stop buying and maintaining burners.</li><li>Keep only a small downtime process.</li><li>Remove routine disc queues.</li></ul></article>
+          <article class="card"><span class="label">2 · Clinical workflow · 18.2%</span><h3>Get priors before the visit</h3><ul><li>Retrieve outside MRIs electronically.</li><li>Avoid phone, fax, and manual chasing.</li><li>Ingest images into clinical workflows.</li></ul></article>
+          <article class="card"><span class="label">3 · Patients / apps · 36.4%</span><h3>Give patients the real study</h3><ul><li>Full-fidelity DICOM in an app they choose.</li><li>Portable images across health systems.</li></ul></article>
+          <article class="card teal-card"><span class="label" style="color:var(--teal)">Common service</span><h3>One imaging service</h3><p style="font-size:clamp(16px,1.08vw,21px); color:var(--ink); font-weight:650;">FHIR <code>ImagingStudy</code> + DICOMweb</p><p style="margin-top:8px">Clinical intake and patient access can use the same imaging service, with authorization appropriate to each workflow.</p></article>
+        </div>
+      </section>
+
+      <section class="slide slide-risks" data-title="What participants are worried about" data-notes="The clearest warning is about process: people do not want another year of discussion without implementation.\n\nA second concern is cost and architecture. Several participants do not want this work to require a new imaging-specific intermediary. That does not mean networks are out of scope as partners. Networks are well placed to help with trust, discovery, registration, and record location. The point is that the imaging data service should remain a standards-based service operated by or on behalf of the data holder.\n\nWe also need to keep the roles straight. An EHR or enterprise authorization service may issue or validate access. A PACS, VNA, cloud service, or proxy may hold and serve the images. We should specify how those pieces work together rather than assume they are one system.">
+        <div class="eyebrow"><span>CMS Health Tech Ecosystem · Diagnostic Imaging Workgroup</span><span>Survey risks</span></div>
+        <h1 class="title">What participants are worried about</h1>
+        <div class="rule"></div>
+        <table class="data-table">
+          <thead><tr><th>Reported failure mode</th><th style="text-align:right">n</th><th style="text-align:right">% cohort</th><th>Direct survey quote</th></tr></thead>
+          <tbody>
+            <tr><td><span class="risk-dot"></span>Endless discussion</td><td class="num">7</td><td class="num">31.8%</td><td class="quote">“We talk and talk &amp; nothing changes”</td></tr>
+            <tr><td><span class="risk-dot"></span>Costly new intermediary / network</td><td class="num">5</td><td class="num">22.7%</td><td class="quote">“Creating another expensive network”</td></tr>
+            <tr><td><span class="risk-dot"></span>Confusing EHR and imaging roles</td><td class="num">3</td><td class="num">13.6%</td><td class="quote">“Not understanding it's beyond EHRs”</td></tr>
+            <tr><td><span class="risk-dot"></span>Focusing on one access mode</td><td class="num">2</td><td class="num">9.1%</td><td class="quote">“Focusing ONLY on one access mode”</td></tr>
+            <tr><td><span class="risk-dot"></span>Leaving smaller sites behind</td><td class="num">2</td><td class="num">9.1%</td><td class="quote">“Leaving community practices out”</td></tr>
+            <tr><td><span class="risk-dot"></span>Unsure / other</td><td class="num">1</td><td class="num">4.5%</td><td></td></tr>
+          </tbody>
+        </table>
+        <div class="card" style="margin-top:auto; padding:14px 18px">
+          <span class="label">How we respond</span>
+          <div class="response-grid" style="margin-top:9px">
+            <div class="response-item"><b>01</b><span>Lock a narrow implementation target by Nov 1.</span></div>
+            <div class="response-item"><b>02</b><span>Use APIs at or on behalf of the data holder; do not require a new imaging-specific intermediary.</span></div>
+            <div class="response-item"><b>03</b><span>Separate authorization from image storage and delivery.</span></div>
+            <div class="response-item"><b>04</b><span>Define one imaging service for patient and provider workflows.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide slide-architecture" data-title="One imaging service, several authorization paths" data-notes="The core architecture is simple. Different requesters arrive under different authority: a patient, a clinician, or a backend service acting for an organization.\n\nThe responding organization applies the relevant policy through its authorization infrastructure. That may be part of an EHR, an enterprise IAM service, or another delegated component.\n\nThe imaging service then enforces the token and serves the same underlying contract: ImagingStudy for study discovery and DICOMweb for full-fidelity retrieval. The imaging service may validate tokens locally or use a standards-based introspection mechanism when authorization is separated from the imaging server.\n\nThe important point is not one specific token-validation method. It is that we do not create a separate image API for every trust model.">
+        <div class="eyebrow"><span>CMS Health Tech Ecosystem · Diagnostic Imaging Workgroup</span><span>Architecture</span></div>
+        <h1 class="title">One imaging service, several authorization paths</h1>
+        <div class="rule"></div>
+        <div class="arch3" style="flex:1">
+          <div class="arch-box">
+            <span class="label">Requester / context</span>
+            <div class="stack" style="margin-top:11px">
+              <div class="mini"><b>Organization / service</b><span>Backend client · treatment workflow</span></div>
+              <div class="mini"><b>Practitioner / user</b><span>Clinical application</span></div>
+              <div class="mini"><b>Patient / delegate</b><span>Consumer application</span></div>
+            </div>
+          </div>
+          <div class="arch-box blue">
+            <span class="label" style="color:var(--blue)">Organization authorization</span>
+            <h3 style="margin-top:10px">Authorization service</h3>
+            <div class="sub">EHR, IAM, or delegated authorization server</div>
+            <ul><li>Applies policy for requester and context.</li><li>Issues or validates OAuth access.</li><li>Enforces patient, user, or system context.</li></ul>
+          </div>
+          <div class="arch-box teal">
+            <span class="label" style="color:var(--teal)">Imaging service</span>
+            <h3 style="margin-top:10px">FHIR + DICOMweb</h3>
+            <div class="mini" style="margin-bottom:9px"><b>FHIR <code>ImagingStudy</code></b><span>Study discovery and metadata</span></div>
+            <div class="mini"><b>DICOMweb · WADO-RS</b><span>Full-fidelity DICOM retrieval</span></div>
+            <div class="arch-note"><b>Token validation:</b> local validation or standards-based introspection.</div>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:2.2%; background:white; border-color:var(--grid)">Do not build a different imaging API for each authorization model.</div>
+      </section>
+
+      <section class="slide slide-trust" data-title="Start now. Scale through network trust." data-notes="We should not wait for every network and trust specification to be complete before we test the imaging service.\n\nEarly implementations can use authorization paths that work today: patient SMART, a bilateral backend client, or a local clinical workflow. That is enough to test study search, authorization behavior, and DICOM retrieval across independent products.\n\nAt scale, networks can remove the site-by-site friction. They can help establish participant trust, locate records and endpoints, and support client registration or onboarding. The responding organization still authorizes access to its service.\n\nThis is also the useful lesson from TEFCA Facilitated FHIR: network services can provide the control plane while the actual FHIR request goes to the responding node. We should design the imaging service so it can use that model without being blocked on it.">
+        <div class="eyebrow"><span>CMS Health Tech Ecosystem · Diagnostic Imaging Workgroup</span><span>Authorization &amp; trust</span></div>
+        <h1 class="title">Start now. Scale through network trust.</h1>
+        <div class="rule"></div>
+        <div class="trust-layout" style="flex:1">
+          <div class="service-block"><span class="label" style="color:var(--teal)">Imaging service contract</span><h3>FHIR <code>ImagingStudy</code> + authorized DICOMweb retrieval</h3><p>The service contract stays the same as trust becomes more scalable.</p></div>
+          <div class="path-grid">
+            <article class="path-card direct"><span class="label" style="color:var(--blue)">Direct / early implementation</span><h3>Use authorization paths that work today</h3><ul><li>Patient SMART authorization</li><li>Bilateral backend client</li><li>Local clinician workflow</li><li>Site-specific onboarding where needed</li></ul></article>
+            <article class="path-card network"><span class="label" style="color:var(--teal)">Network-facilitated / scale</span><h3>Use the network as the control plane</h3><ul><li>Establish participant trust</li><li>Locate responding sites, endpoints, and records</li><li>Support client registration / onboarding</li><li>Responding organization authorizes access to its API</li></ul></article>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide slide-scope" data-title="What this workgroup owns" data-notes="This is the scope boundary I want us to make explicit.\n\nWe should define the imaging-service contract: how a client finds studies, how those studies point to DICOMweb, what a server must do with authorization, how reports and study identifiers line up, and how we test conformance.\n\nWe should not design general-purpose identity, nationwide trust governance, record-location services, consent policy, or client-registration policy. Other CMS ecosystem tracks, TEFCA, and existing standards work are addressing those pieces. We should use their outputs as they mature and define the interface our imaging service needs from them.\n\nDocument exchange also remains useful. XCA and XCA-I solve real provider-to-provider workflows today. We do not need to argue against that work. It is simply a different exchange path. The distinct deliverable here is a reusable FHIR and DICOMweb imaging service that can be reached through more than one trust model.">
+        <div class="eyebrow"><span>CMS Health Tech Ecosystem · Diagnostic Imaging Workgroup</span><span>Scope</span></div>
+        <h1 class="title">What this workgroup owns</h1>
+        <div class="rule"></div>
+        <div class="scope-grid" style="flex:1">
+          <section class="scope-panel ours"><span class="label" style="color:var(--teal)">We define · the imaging service</span>
+            <div class="scope-item"><div class="check">✓</div><div><b>FHIR <code>ImagingStudy</code> profile</b><span>Minimum searches, identifiers, and endpoint discovery from the clinical record.</span></div></div>
+            <div class="scope-item"><div class="check">✓</div><div><b>DICOMweb retrieval baseline</b><span>Full-fidelity study retrieval.</span></div></div>
+            <div class="scope-item"><div class="check">✓</div><div><b>Authorization-facing contract</b><span>Token presentation, validation, and required scopes / context.</span></div></div>
+            <div class="scope-item"><div class="check">✓</div><div><b>Report linkage, errors, and conformance testing</b><span>Enough detail to test independent implementations.</span></div></div>
+          </section>
+          <section class="scope-panel"><span class="label" style="color:var(--blue)">We rely on · ecosystem services</span>
+            <div class="scope-item"><div class="check" style="color:var(--blue)">○</div><div><b>Identity and participant trust</b><span>Use ecosystem profiles.</span></div></div>
+            <div class="scope-item"><div class="check" style="color:var(--blue)">○</div><div><b>Endpoint and record discovery</b><span>Use network / directory services.</span></div></div>
+            <div class="scope-item"><div class="check" style="color:var(--blue)">○</div><div><b>Client registration / onboarding</b><span>Use cross-ecosystem standards.</span></div></div>
+            <div class="scope-item"><div class="check" style="color:var(--blue)">○</div><div><b>Consent, purpose of use, policy</b><span>Consume; do not redefine.</span></div></div>
+          </section>
+        </div>
+        <div class="complement"><b>Complementary path:</b> IHE / XCA / XCA-I and document exchange remain useful production approaches. They may run in parallel or bridge to this work, but they are not the normative imaging-service deliverable of this workgroup.</div>
+      </section>
+
+      <section class="slide slide-deliverable" data-title="November: lock the target and the implementers" data-notes="CMS has already set the broad direction for diagnostic imaging: FHIR ImagingStudy, DICOMweb, SMART Imaging Access, and full-fidelity access for patient and healthcare workflows. Our job this fall is to turn that direction into a clean implementation target.\n\nBy November, we should be able to say exactly what a conformant implementation must do, which organizations will implement each role, and how we will test the pieces together.\n\nWe do not need 50 organizations to make the first implementation credible. We need multiple independent implementers in the roles that matter: data holders, authorization services, imaging services, and clients. We should also bring network participants into the test matrix so we can add scalable trust, discovery, and registration without changing the imaging-service contract.\n\nThe November deliverable is therefore not another architecture paper. It is a narrow specification, named implementers, and an agreed test plan.">
+        <div class="eyebrow"><span>CMS Health Tech Ecosystem · Diagnostic Imaging Workgroup</span><span>Fall deliverable</span></div>
+        <h1 class="title">November: lock the target and the implementers</h1>
+        <div class="pledge-intro"><div class="statement">The public CMS pledge sets the direction. Our fall job is to make it testable.</div><div class="pill">One contract · multiple implementations</div></div>
+        <div class="role-grid">
+          <article class="role"><span class="label">Role 1</span><h3>Data holder</h3><div class="role-sub">Health system / provider</div><ul><li>Supply test patients</li><li>Supply test studies</li><li>Own source data</li></ul><div class="target">Target: 3–5</div></article>
+          <article class="role"><span class="label">Role 2</span><h3>Authorization</h3><div class="role-sub">EHR / IAM / auth server</div><ul><li>Issue / validate access</li><li>Enforce context and policy</li><li>Support test clients</li></ul><div class="target">Target: 2–3</div></article>
+          <article class="role"><span class="label">Role 3</span><h3>Imaging service</h3><div class="role-sub">PACS / VNA / proxy</div><ul><li>Expose <code>ImagingStudy</code></li><li>Expose DICOMweb</li><li>Return full-fidelity studies</li></ul><div class="target">Target: 2–3</div></article>
+          <article class="role"><span class="label">Role 4</span><h3>Client</h3><div class="role-sub">App / viewer / intake</div><ul><li>Search studies</li><li>Retrieve DICOM</li><li>Render or ingest</li></ul><div class="target">Target: 3–4</div></article>
+        </div>
+        <div class="network-band"><b>Network / trust / discovery</b><span>Direct or bilateral paths are enough for first tests. Add network implementers to prove scalable trust, discovery, and registration.</span></div>
+        <div class="action-line">By Nov 1: agree the minimum conformance target, name the implementers, and publish the test plan / implementation commitments.</div>
+      </section>
+
+    </div>
+  </main>
+
+  <nav class="controls" aria-label="Slide navigation">
+    <div class="nav-left">
+      <button class="control-btn" id="prevBtn" aria-label="Previous slide" title="Previous slide (←)">‹<span>Previous</span></button>
+    </div>
+    <div class="nav-progress" title="Arrow keys navigate · O overview · N notes · F fullscreen">
+      <div class="dots" id="dots" aria-label="Jump to slide"></div>
+      <span class="count" id="count">1 / 8</span>
+    </div>
+    <div class="nav-right">
+      <button class="control-btn" id="overviewBtn" aria-label="Open slide overview" title="Slide overview (O)">O</button>
+      <button class="control-btn" id="notesBtn" aria-label="Toggle speaker notes" title="Speaker notes (N)">N</button>
+      <button class="control-btn" id="nextBtn" aria-label="Next slide" title="Next slide (→)"><span>Next</span>›</button>
+    </div>
+  </nav>
+</div>
+
+<aside class="notes-panel" id="notesPanel" aria-label="Speaker notes">
+  <div class="notes-head"><h2>Speaker notes</h2><button class="close-notes" id="closeNotes" aria-label="Close speaker notes">×</button></div>
+  <div class="notes-body" id="notesBody"></div>
+</aside>
+
+<div class="overview" id="overview" role="dialog" aria-modal="true" aria-label="Slide overview">
+  <div class="overview-head"><h2>Slide overview</h2><button class="control-btn" id="closeOverview">Close <span class="key">Esc</span></button></div>
+  <div class="overview-grid" id="overviewGrid"></div>
+</div>
+
+<script>
+(() => {
+  const slides = [...document.querySelectorAll('.slide')];
+  const dots = document.getElementById('dots');
+  const count = document.getElementById('count');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const notesBtn = document.getElementById('notesBtn');
+  const notesPanel = document.getElementById('notesPanel');
+  const notesBody = document.getElementById('notesBody');
+  const closeNotes = document.getElementById('closeNotes');
+  const overviewBtn = document.getElementById('overviewBtn');
+  const overview = document.getElementById('overview');
+  const overviewGrid = document.getElementById('overviewGrid');
+  const closeOverview = document.getElementById('closeOverview');
+  let index = 0;
+
+  function makeDots() {
+    slides.forEach((slide, i) => {
+      const b = document.createElement('button');
+      b.className = 'dot';
+      b.setAttribute('aria-label', `Go to slide ${i + 1}: ${slide.dataset.title}`);
+      b.addEventListener('click', () => go(i));
+      dots.appendChild(b);
+    });
+  }
+
+  function render() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === index));
+    [...dots.children].forEach((d, i) => d.classList.toggle('active', i === index));
+    count.textContent = `${index + 1} / ${slides.length}`;
+    prevBtn.disabled = index === 0;
+    nextBtn.disabled = index === slides.length - 1;
+    notesBody.textContent = slides[index].dataset.notes || 'No notes for this slide.';
+    document.title = `${index + 1}. ${slides[index].dataset.title} · CMS Diagnostic Imaging`;
+    history.replaceState(null, '', `#${index + 1}`);
+  }
+
+  function go(i) {
+    index = Math.max(0, Math.min(slides.length - 1, i));
+    render();
+  }
+
+  function toggleNotes(force) {
+    const open = typeof force === 'boolean' ? force : !notesPanel.classList.contains('open');
+    notesPanel.classList.toggle('open', open);
+    notesBtn.setAttribute('aria-pressed', String(open));
+  }
+
+  function buildOverview() {
+    overviewGrid.innerHTML = '';
+    slides.forEach((slide, i) => {
+      const thumb = document.createElement('div');
+      thumb.className = 'thumb';
+      thumb.setAttribute('role', 'button');
+      thumb.setAttribute('tabindex', '0');
+      thumb.setAttribute('aria-label', `Open slide ${i + 1}: ${slide.dataset.title}`);
+      const number = document.createElement('div');
+      number.className = 'thumb-number';
+      number.textContent = String(i + 1).padStart(2, '0');
+      const title = document.createElement('h3');
+      title.className = 'thumb-title';
+      title.textContent = slide.dataset.title;
+      thumb.append(number, title);
+      const pick = () => { go(i); overview.classList.remove('open'); };
+      thumb.addEventListener('click', pick);
+      thumb.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') pick(); });
+      overviewGrid.appendChild(thumb);
+    });
+  }
+
+  function toggleOverview(force) {
+    const open = typeof force === 'boolean' ? force : !overview.classList.contains('open');
+    if (open) buildOverview();
+    overview.classList.toggle('open', open);
+    if (open) toggleNotes(false);
+  }
+
+  prevBtn.addEventListener('click', () => go(index - 1));
+  nextBtn.addEventListener('click', () => go(index + 1));
+  notesBtn.addEventListener('click', () => toggleNotes());
+  closeNotes.addEventListener('click', () => toggleNotes(false));
+  overviewBtn.addEventListener('click', () => toggleOverview());
+  closeOverview.addEventListener('click', () => toggleOverview(false));
+
+  document.addEventListener('keydown', e => {
+    if (e.target.matches('button, input, textarea, select')) return;
+    if (overview.classList.contains('open')) {
+      if (e.key === 'Escape' || e.key.toLowerCase() === 'o') toggleOverview(false);
+      return;
+    }
+    switch (e.key) {
+      case 'ArrowRight': case 'PageDown': case ' ': e.preventDefault(); go(index + 1); break;
+      case 'ArrowLeft': case 'PageUp': e.preventDefault(); go(index - 1); break;
+      case 'Home': go(0); break;
+      case 'End': go(slides.length - 1); break;
+      case 'Escape': toggleNotes(false); break;
+      default:
+        if (e.key.toLowerCase() === 'n') toggleNotes();
+        if (e.key.toLowerCase() === 'o') toggleOverview();
+        if (!e.metaKey && !e.ctrlKey && !e.altKey && e.key.toLowerCase() === 'f') {
+          if (document.fullscreenElement) document.exitFullscreen();
+          else document.documentElement.requestFullscreen().catch(() => {});
+        }
+    }
+  });
+
+  makeDots();
+  const hashSlide = Number(location.hash.replace('#',''));
+  if (Number.isInteger(hashSlide) && hashSlide >= 1 && hashSlide <= slides.length) index = hashSlide - 1;
+  render();
+})();
+</script>
+</body>
+</html>
