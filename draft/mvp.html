@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ditch the Disk MVP</title>
+<meta name="description" content="A proposed minimum viable product and pledge for the CMS Health Tech Ecosystem Diagnostic Imaging (Ditch the Disk) workgroup.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=Spectral:wght@600&display=swap">
+<style>
+  :root {
+    --paper: #FAFBFC; --surface: #F1F4F7; --surface-2: #E7ECF1;
+    --ink: #1C2733; --ink-2: #4C5A68; --ink-3: #71808F;
+    --line: #C9D2DB;
+    --accent: #0E7B8C; --accent-soft: #D9EDF1; --accent-ink: #0A5D6B;
+    --warn: #B45309; --warn-soft: #FEF3C7; --warn-ink: #7C3A06;
+    --sans: "Public Sans", -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --serif: "Spectral", Georgia, "Times New Roman", serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #131A22; --surface: #1B242E; --surface-2: #232E3A;
+      --ink: #E7EDF3; --ink-2: #A9B6C3; --ink-3: #7E8C9A;
+      --line: #37434F;
+      --accent: #3FAABC; --accent-soft: #143540; --accent-ink: #7BC9D6;
+      --warn: #E0A458; --warn-soft: #3A2A12; --warn-ink: #F2C98A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #131A22; --surface: #1B242E; --surface-2: #232E3A;
+    --ink: #E7EDF3; --ink-2: #A9B6C3; --ink-3: #7E8C9A;
+    --line: #37434F;
+    --accent: #3FAABC; --accent-soft: #143540; --accent-ink: #7BC9D6;
+    --warn: #E0A458; --warn-soft: #3A2A12; --warn-ink: #F2C98A;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 17px; line-height: 1.6; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 22px 80px; }
+  .draftbar { background: var(--warn-soft); color: var(--warn-ink); font-size: 14px; padding: 9px 22px; text-align: center; border-bottom: 1px solid var(--warn); }
+  header.doc { padding: 46px 0 18px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+  .kicker { font-size: 12.5px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--accent-ink); margin: 0 0 12px; }
+  h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(30px, 4.6vw, 42px); line-height: 1.12; margin: 0 0 14px; letter-spacing: -.01em; text-wrap: balance; }
+  h2 { font-family: var(--serif); font-weight: 600; font-size: 27px; line-height: 1.2; margin: 56px 0 14px; text-wrap: balance; }
+  h3 { font-size: 17px; font-weight: 700; margin: 26px 0 6px; }
+  .abstract { font-size: 19px; color: var(--ink-2); margin: 0; max-width: 60ch; }
+  p { margin: 0 0 14px; max-width: 68ch; }
+  ul, ol { margin: 0 0 14px; padding-left: 22px; max-width: 68ch; }
+  li { margin: 0 0 7px; }
+  code { font-family: var(--mono); font-size: .85em; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+  a { color: var(--accent-ink); }
+  .muted { color: var(--ink-2); }
+
+  nav.toc { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; padding: 16px 0 0; }
+  nav.toc a { color: var(--ink-2); text-decoration: none; border-bottom: 1px solid var(--line); }
+  nav.toc a:hover { color: var(--accent-ink); border-bottom-color: var(--accent); }
+
+  .quote { margin: 18px 0; padding: 16px 22px; border-left: 4px solid var(--accent); background: var(--accent-soft); border-radius: 0 8px 8px 0; }
+  .quote p { font-family: var(--serif); font-size: 19px; line-height: 1.4; margin: 0; max-width: none; }
+  .quote .src { font-family: var(--sans); font-size: 13.5px; color: var(--ink-2); margin-top: 8px; }
+
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 20px 0 10px; }
+  .stat { border-top: 3px solid var(--line); padding-top: 10px; }
+  .stat.key { border-top-color: var(--accent); }
+  .stat .num { font-family: var(--serif); font-size: 36px; line-height: 1; color: var(--ink); }
+  .stat .lbl { font-size: 14.5px; color: var(--ink-2); margin-top: 6px; line-height: 1.4; }
+  .stats-note { font-size: 13.5px; color: var(--ink-3); }
+  @media (max-width: 640px) { .stats { grid-template-columns: 1fr; } }
+
+  .principles { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+  .pr { border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; background: var(--paper); }
+  .pr b { display: block; font-size: 16px; margin-bottom: 4px; }
+  .pr span { font-size: 15px; color: var(--ink-2); display: block; line-height: 1.5; }
+  @media (max-width: 680px) { .principles { grid-template-columns: 1fr; } }
+
+  .pledge { margin: 16px 0 0; padding: 24px 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+  .pledge p { font-size: 17.5px; max-width: none; }
+  .pledge ul { list-style: none; padding: 0; margin: 0; max-width: none; }
+  .pledge li { padding: 10px 0; border-top: 1px solid var(--line); margin: 0; }
+  .pledge li b { color: var(--accent-ink); }
+  .fill { background: var(--warn-soft); color: var(--warn-ink); padding: 0 5px; border-radius: 3px; }
+
+  .role { border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 8px; padding: 16px 20px 8px; margin: 14px 0; }
+  .role h3 { margin: 0 0 2px; }
+  .role .who { font-size: 14px; color: var(--ink-3); margin: 0 0 10px; }
+
+  figure { margin: 18px 0 8px; }
+  figure svg { max-width: 100%; height: auto; display: block; }
+  figcaption { font-size: 15px; color: var(--ink-2); max-width: 66ch; margin: 10px 0 0; line-height: 1.5; }
+  .fig text { font-family: var(--sans); }
+  .fig .t-title { font-size: 14px; font-weight: 700; fill: var(--ink); }
+  .fig .t-body  { font-size: 12px; fill: var(--ink-2); }
+  .fig .t-small { font-size: 11px; fill: var(--ink-3); }
+  .fig .box     { fill: var(--paper); stroke: var(--line); stroke-width: 1.3; }
+  .fig .box-key { fill: var(--paper); stroke: var(--accent); stroke-width: 2; }
+  .fig .fa { stroke: var(--accent); stroke-width: 2; fill: none; }
+  .fig .fd { stroke: var(--ink-3); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+  .fig .ma { fill: var(--accent); }
+  .fig .md { fill: var(--ink-3); }
+  .fig .region { fill: var(--surface); stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 5 4; }
+
+  .tablewrap { overflow-x: auto; margin: 14px 0 16px; border: 1px solid var(--line); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; line-height: 1.45; }
+  th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-top: 1px solid var(--line); }
+  thead th { border-top: none; background: var(--surface); font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink-2); font-weight: 700; }
+  tbody th { font-weight: 700; }
+
+  .cats { margin-top: 14px; border-top: 1px solid var(--line); }
+  .cat { display: grid; grid-template-columns: 220px 1fr; gap: 18px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .cat h3 { margin: 0; font-size: 16px; }
+  .cat .plays { font-size: 15.5px; margin: 0 0 4px; }
+  .cat .cands { font-size: 14.5px; color: var(--ink-2); margin: 0; }
+  .cat .cands b { color: var(--ink-3); font-weight: 600; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; margin-right: 6px; }
+  @media (max-width: 640px) { .cat { grid-template-columns: 1fr; gap: 4px; } }
+
+
+  .ptable { margin-top: 14px; border-top: 1px solid var(--line); }
+  .prow { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,4fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; line-height: 1.45; }
+  .psub { display: grid; grid-template-columns: 160px minmax(0,1.6fr) minmax(0,1.3fr); gap: 16px; }
+  .psubs .psub + .psub { border-top: 1px dashed var(--line); margin-top: 10px; padding-top: 10px; }
+  .psubs.shared { display: grid; grid-template-columns: 160px minmax(0,1.6fr) minmax(0,1.3fr); column-gap: 16px; }
+  .psubs.shared .sep { border-top: 1px dashed var(--line); margin-top: 10px; padding-top: 10px; }
+  .phead { font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); padding: 10px 0; }
+  .pt { font-weight: 700; font-size: 15px; }
+  .pe { color: var(--ink-2); }
+  .chip { display: inline-block; background: var(--accent-soft); color: var(--accent-ink); font-size: 12.5px; font-weight: 600; padding: 2px 8px; border-radius: 10px; margin: 0 4px 4px 0; white-space: nowrap; }
+  .chip-n { background: var(--surface-2); color: var(--ink-2); }
+  .plabel { display: none; }
+  @media (max-width: 720px) {
+    .phead { display: none; }
+    .prow { grid-template-columns: 1fr; gap: 6px; }
+    .psub { grid-template-columns: 1fr; gap: 4px; }
+    .psubs.shared { grid-template-columns: 1fr; row-gap: 4px; }
+    .psubs.shared > .pc { grid-column: 1 !important; grid-row: auto !important; }
+    .plabel { display: block; font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px; }
+  }
+  .setup { margin: 22px 0 10px; }
+  .setup h4 { font-size: 15.5px; margin: 0 0 4px; }
+  .setup p { font-size: 15px; color: var(--ink-2); margin-bottom: 6px; }
+  .tabs { margin-top: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); overflow: hidden; }
+  .tablist { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .tablist button { font: inherit; font-size: 14px; background: var(--paper); color: var(--ink-2); border: 1px solid var(--line); border-radius: 16px; padding: 5px 12px; cursor: pointer; }
+  .tablist button[aria-selected="true"] { background: var(--accent-soft); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+  .tablist button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .tabpanels { display: grid; padding: 14px 16px 6px; }
+  .tabpanel { grid-area: 1 / 1; }
+  .tabpanel[hidden] { display: block; visibility: hidden; }
+  .tabpanel p { font-size: 15.5px; color: var(--ink-2); margin-top: 6px; }
+  details.glossary { margin-top: 56px; border-top: 1px solid var(--line); }
+  details.glossary summary { cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: 12px; padding: 14px 0 4px; }
+  details.glossary summary::-webkit-details-marker { display: none; }
+  details.glossary summary h2 { margin: 0; }
+  details.glossary summary::before { content: "\25B8"; color: var(--accent-ink); font-size: 18px; }
+  details.glossary[open] summary::before { content: "\25BE"; }
+  .gcount { font-size: 14px; color: var(--ink-3); }
+  .timeline { list-style: none; padding: 0; margin: 14px 0; border-left: 2px solid var(--line); }
+  .timeline li { position: relative; padding: 0 0 14px 22px; margin: 0; display: grid; grid-template-columns: 190px 1fr; gap: 12px; }
+  @media (max-width: 600px) { .timeline li { grid-template-columns: 1fr; gap: 2px; } }
+  .timeline li::before { content: ""; position: absolute; left: -7px; top: 7px; width: 12px; height: 12px; border-radius: 50%; background: var(--paper); border: 2px solid var(--accent); }
+  .timeline b { display: block; }
+  .bg { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 6px 26px 12px; margin-top: 28px; }
+  .bg h2 { margin-top: 22px; font-size: 22px; }
+  .role p.what { margin: 0 0 10px; color: var(--ink-2); font-size: 15.5px; }
+
+  .done { margin-top: 20px; padding: 22px 24px; border-radius: 10px; background: var(--ink); color: var(--paper); }
+  .done p { font-family: var(--serif); font-size: 20px; line-height: 1.35; margin: 0 0 8px; max-width: none; }
+  .note { font-size: 15px; color: var(--ink-2); border-left: 3px solid var(--line); padding-left: 12px; }
+
+  dl.gloss { display: grid; grid-template-columns: 190px 1fr; gap: 10px 18px; font-size: 15px; margin: 14px 0; }
+  dl.gloss dt { font-weight: 700; }
+  dl.gloss dd { margin: 0; color: var(--ink-2); }
+  @media (max-width: 600px) { dl.gloss { grid-template-columns: 1fr; gap: 2px; } dl.gloss dd { margin-bottom: 10px; } }
+  footer { margin-top: 48px; font-size: 13.5px; color: var(--ink-3); border-top: 1px solid var(--line); padding-top: 14px; }
+</style>
+</head>
+<body>
+<div class="draftbar">Draft for discussion. Organizations are named as examples.</div>
+<div class="wrap">
+<header class="doc">
+  <p class="kicker">CMS Health Tech Ecosystem · Diagnostic Imaging Workgroup</p>
+  <h1>Ditch the Disk: proposed MVP and pledge</h1>
+  <p class="abstract">A proposal for what organizations in the Ditch the Disk workgroup would pledge to build this fall, and how they would test it together.</p>
+  <nav class="toc" aria-label="Sections">
+    <a href="#background">Background</a><a href="#pledge">Proposed pledge</a><a href="#principles">Principles</a><a href="#requirements">Requirements by role</a><a href="#participants">Taking part</a><a href="#glossary">Glossary</a>
+  </nav>
+</header>
+
+<div class="bg" id="background">
+<h2>Background</h2>
+<p>The Centers for Medicare &amp; Medicaid Services (CMS) runs the Health Tech Ecosystem, a voluntary pledge program. In July 2026 CMS launched its Diagnostic Imaging workgroup, known as Ditch the Disk, with an <a href="https://www.cms.gov/initiatives/health-technology-ecosystem/overview/early-adopters-all-pledgees/additional-use-case/additional-use-case-diagnostic-imaging-workgroup-ditch-disk" target="_blank" rel="noopener">initial draft pledge</a>: full-fidelity images, meaning the original image files, for patient access, treatment, and payment. The workgroup is writing the actual pledge, with enough detail to build and test, by November 1.</p>
+<p>Patients can already connect an app to their hospital and download their clinical records, because certified EHRs must offer a standard API. Images live in separate imaging systems that these apps cannot reach, so clinicians who need outside images often wait for a CD or request them by phone and fax. In a kickoff survey of 22 participants, most said patients still get images on CDs, though most of their health systems already run standard APIs for clinical data.</p>
+<p>SMART Imaging Access is a specification for putting images behind the sign-in that apps already use. It combines SMART on FHIR for sign-in and permission, FHIR for health data, and DICOMweb for medical images. An app that a patient or clinician has approved uses the same permission to list the patient's imaging studies and download the images. The <a href="https://build.fhir.org/ig/argonautproject/smart-imaging/" target="_blank" rel="noopener">current draft</a> is under review at HL7, the standards organization that publishes FHIR.</p>
+<figure>
+<svg class="fig" viewBox="0 0 900 290" role="img" aria-label="An app gets permission from the authorization server, then finds studies and retrieves images from the imaging server using that same permission. The imaging server checks the permission with the authorization server. A health system or imaging center operates the authorization server, the imaging server, and the image archive.">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ma"/></marker>
+    <marker id="arrd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="md"/></marker>
+  </defs>
+  <rect x="325" y="8" width="565" height="272" rx="10" class="region"/>
+  <text x="607" y="268" text-anchor="middle" class="t-small">Data holder: a health system, imaging center, or practice</text>
+
+  <rect x="20" y="100" width="200" height="100" rx="8" class="box-key"/>
+  <text x="120" y="138" text-anchor="middle" class="t-title">Client</text>
+  <text x="120" y="158" text-anchor="middle" class="t-body">a patient's app, a viewer,</text>
+  <text x="120" y="174" text-anchor="middle" class="t-body">or a referral service</text>
+
+  <rect x="350" y="26" width="210" height="60" rx="8" class="box-key"/>
+  <text x="455" y="51" text-anchor="middle" class="t-title">Authorization server</text>
+  <text x="455" y="70" text-anchor="middle" class="t-body">sign-in and permission</text>
+
+  <rect x="640" y="26" width="230" height="212" rx="8" class="box-key"/>
+  <text x="755" y="52" text-anchor="middle" class="t-title">Imaging server</text>
+  <rect x="655" y="80" width="200" height="46" rx="6" class="box"/>
+  <text x="755" y="100" text-anchor="middle" class="t-title">Study list</text>
+  <text x="755" y="116" text-anchor="middle" class="t-body">FHIR ImagingStudy</text>
+  <rect x="655" y="134" width="200" height="46" rx="6" class="box"/>
+  <text x="755" y="154" text-anchor="middle" class="t-title">Image download</text>
+  <text x="755" y="170" text-anchor="middle" class="t-body">DICOMweb</text>
+  <rect x="655" y="188" width="200" height="42" rx="6" class="region"/>
+  <text x="755" y="205" text-anchor="middle" class="t-title">Image archive</text>
+  <text x="755" y="221" text-anchor="middle" class="t-small">built in, or a separate system</text>
+
+  <polyline points="120,100 120,56 348,56" class="fa" marker-end="url(#arr)"/>
+  <text x="130" y="84" class="t-small">1 · get permission</text>
+  <line x1="220" y1="106" x2="653" y2="106" class="fa" marker-end="url(#arr)"/>
+  <text x="236" y="98" class="t-small">2 · find the patient's studies</text>
+  <line x1="220" y1="160" x2="653" y2="160" class="fa" marker-end="url(#arr)"/>
+  <text x="236" y="152" class="t-small">3 · download images, same permission</text>
+  <line x1="640" y1="56" x2="562" y2="56" class="fd" marker-end="url(#arrd)"/>
+  <text x="600" y="44" text-anchor="middle" class="t-small">check</text>
+  <text x="600" y="76" text-anchor="middle" class="t-small">permission</text>
+</svg>
+</figure>
+</div>
+
+<h2 id="pledge">Proposed pledge</h2>
+<p>We propose a minimum viable product, or MVP: the smallest set of capabilities that lets patients and clinicians get images without a disk. It is a subset of SMART Imaging Access, organized into five roles. One organization or product can fill several roles. The pledge text below would replace the initial draft that CMS published at launch.</p>
+<div class="pledge">
+  <p>We pledge to make diagnostic images available electronically for patient access, treatment, and other permitted uses, so they no longer need to travel on disks.</p>
+  <p>We will implement SMART Imaging Access, following its profiles of FHIR and DICOMweb. This approach lets an organization make its images available to any approved app, and it lays groundwork for connecting image data to network-based exchange.</p>
+  <p>We will test our implementation with other pledgers by January 2027 and use what we learn to improve the specification and drive real-world adoption.</p>
+  <p>We will fill one or more of these roles:</p>
+  <ul>
+    <li><b>Data holder.</b> Make our studies and reports available through these services, first in a test environment and then for real patients.</li>
+    <li><b>Authorization server.</b> Let patients and clinicians approve apps for imaging, tell apps where imaging is available, and let imaging servers check the permissions we grant.</li>
+    <li><b>Imaging server.</b> List a patient's studies through FHIR ImagingStudy and return full-fidelity DICOM through DICOMweb to approved apps, applying each organization's access rules.</li>
+    <li><b>Image archive.</b> Provide studies to an imaging server through DICOMweb search and retrieval. The archive can be part of the imaging server or a separate system behind it.</li>
+    <li><b>Client.</b> Build an app or service that finds and downloads full-fidelity studies this way, for patients or clinicians.</li>
+  </ul>
+</div>
+
+<h2 id="principles">Principles</h2>
+
+<div class="principles">
+  <div class="pr"><b>One imaging server for all requesters</b><span>Patients, clinicians, and organizations use the same study search and image download. Only the way permission is granted differs.</span></div>
+  <div class="pr"><b>Existing standards</b><span>SMART, FHIR, and DICOMweb are used as they are deployed today, with no new intermediary that everyone must pay for.</span></div>
+  <div class="pr"><b>Original images</b><span>Clients receive the original DICOM files.</span></div>
+  <div class="pr"><b>A building block for networks</b><span>It starts with one hospital or imaging center offering images directly, and grows as health information networks connect to the same interface.</span></div>
+  <div class="pr"><b>Local access rules</b><span>Each organization's own systems decide who may see which studies. The MVP enforces those decisions without defining them.</span></div>
+</div>
+
+<h2 id="requirements">Requirements by role</h2>
+<p>Technical details for each role are in the <a href="https://build.fhir.org/ig/argonautproject/smart-imaging/" target="_blank" rel="noopener">SMART Imaging Access specification</a>.</p>
+
+
+<div class="role">
+  <h3>Data holder</h3>
+  <p class="what">A health system, hospital, imaging center, or practice.</p>
+  <ul>
+    <li>Set up a test environment with synthetic patients and realistic studies, including at least a CT, an MRI, and a plain X-ray.</li>
+    <li>Make reports available through the clinical system and images through the imaging server. Including each study's unique ID or accession number in its report is recommended, so apps can match reports to images.</li>
+    <li>Set a date for making images available to real patients.</li>
+  </ul>
+</div>
+
+<div class="role">
+  <h3>Authorization server</h3>
+  <p class="what">Often part of an EHR, or a separate identity or access service.</p>
+  <ul>
+    <li>Let patients and clinicians approve apps for imaging with the same sign-in they use for clinical data.</li>
+    <li>Publish the imaging server's location in the configuration information the server already provides to apps.</li>
+    <li>Let the imaging server check the permissions it grants.</li>
+    <li>Access for pre-approved systems that run with no user present, such as a referral service, is optional and encouraged. A server that supports only this kind of access does not meet the MVP.</li>
+  </ul>
+</div>
+
+<div class="role">
+  <h3>Imaging server</h3>
+  <p class="what">A service in front of an image archive, an archive with these interfaces built in, a cloud imaging platform, or an EHR's imaging module.</p>
+  <ul>
+    <li>List a patient's studies using FHIR.</li>
+    <li>Return the original DICOM files for a whole study, a series, or a single image.</li>
+    <li>Small preview images are recommended, so apps can show thumbnails before downloading a study.</li>
+    <li>Check the permission on every request, and release only the studies the data holder's access rules allow. The <a href="https://build.fhir.org/ig/argonautproject/smart-imaging/authorization-patterns.html" target="_blank" rel="noopener">specification describes ways</a> to divide this work between an EHR, an imaging server, and an image archive.</li>
+  </ul>
+</div>
+
+<div class="role">
+  <h3>Image archive</h3>
+  <p class="what">A PACS, vendor-neutral archive, or cloud archive.</p>
+  <ul>
+    <li>Let the imaging server search for studies and retrieve the original DICOM files through DICOMweb.</li>
+    <li>The imaging server and the archive arrange their own connection and credentials. Apps never connect to a separate archive directly.</li>
+  </ul>
+</div>
+
+<div class="role">
+  <h3>Client</h3>
+  <p class="what">A patient's app, a clinician's viewer, a clinical intake tool, or a referral service.</p>
+  <ul>
+    <li>Find the imaging server from the authorization server's configuration, or use a configured address.</li>
+    <li>Download a full study, then display it, import it, or give it to the patient.</li>
+    <li>Wait and retry when the imaging server asks, and search again if a download is refused.</li>
+  </ul>
+</div>
+
+<p>Outside the MVP: finding which organizations hold a patient's records, matching patients across organizations, and trust between organizations, which other Health Tech Ecosystem workgroups are addressing. Also outside it: importing studies into another organization's PACS, and other search methods such as DICOM's QIDO-RS.</p>
+
+<h2 id="participants">Taking part</h2>
+<p>The categories below come from the kickoff survey and the workgroup's membership list. The organizations listed are ones that might fit each role.</p>
+<div class="ptable">
+  <div class="prow phead"><div>Participant</div><div class="psub"><div>Role</div><div>What they would do</div><div>For example</div></div></div>
+  <div class="prow">
+    <div class="pc pt">Health systems and imaging centers</div>
+    <div class="psubs shared">
+      <div class="pc" style="grid-column:1;grid-row:1"><span class="plabel">Role</span><span class="chip">Data holder</span></div><div class="pc" style="grid-column:2;grid-row:1"><span class="plabel">What they would do</span>Share their patients' studies and reports, first in a test environment and then for real patients.</div>
+      <div class="pc sep" style="grid-column:1;grid-row:2"><span class="plabel">Role</span><span class="chip">Client</span></div><div class="pc sep" style="grid-column:2;grid-row:2"><span class="plabel">What they would do</span>Retrieve outside images before a patient's visit.</div>
+      <div class="pc pe pshared" style="grid-column:3;grid-row:1 / span 2"><span class="plabel">For example</span>Penn Medicine, UCSF, Cincinnati Children's, Froedtert ThedaCare, Providence, Atlantic Health, Ochsner, Cleveland Clinic, Emory, Weill Cornell, Tennessee Oncology</div>
+    </div>
+  </div>
+  <div class="prow">
+    <div class="pc pt">EHR developers</div>
+    <div class="psubs">
+      <div class="psub"><div class="pc"><span class="plabel">Role</span><span class="chip">Authorization server</span></div><div class="pc"><span class="plabel">What they would do</span>Let patients and clinicians approve apps for imaging, and publish where imaging is available.</div><div class="pc pe"><span class="plabel">For example</span>Epic, Oracle Health, MEDITECH</div></div>
+      <div class="psub"><div class="pc"><span class="plabel">Role</span><span class="chip">Imaging server</span></div><div class="pc"><span class="plabel">What they would do</span>List studies and deliver images from a PACS behind the EHR.</div><div class="pc pe"><span class="plabel">For example</span>Epic, Oracle Health</div></div>
+    </div>
+  </div>
+  <div class="prow">
+    <div class="pc pt">PACS, archive, and cloud imaging vendors</div>
+    <div class="psubs">
+      <div class="psub"><div class="pc"><span class="plabel">Role</span><span class="chip">Imaging server</span></div><div class="pc"><span class="plabel">What they would do</span>Serve apps directly, with the archive built in. This is the fuller role.</div><div class="pc pe"><span class="plabel">For example</span>GE HealthCare (including Intelerad), Philips, Microsoft</div></div>
+      <div class="psub"><div class="pc"><span class="plabel">Role</span><span class="chip">Image archive</span></div><div class="pc"><span class="plabel">What they would do</span>Start by supplying studies over DICOMweb to another imaging server.</div><div class="pc pe"><span class="plabel">For example</span>GE HealthCare, Philips</div></div>
+    </div>
+  </div>
+  <div class="prow">
+    <div class="pc pt">App developers</div>
+    <div class="psubs">
+      <div class="psub"><div class="pc"><span class="plabel">Role</span><span class="chip">Client</span></div><div class="pc"><span class="plabel">What they would do</span>Build patient apps, clinician viewers, and intake tools that find and download studies.</div><div class="pc pe"><span class="plabel">For example</span>b.well, HealthEx, Flexpa, Fasten, Apple, Bairwise, MyDigiRecords, HealthTree, mymedicalimages</div></div>
+    </div>
+  </div>
+  <div class="prow">
+    <div class="pc pt">Networks, health information exchanges, and record-retrieval services</div>
+    <div class="psubs">
+      <div class="psub"><div class="pc"><span class="plabel">Role</span><span class="chip">Client</span></div><div class="pc"><span class="plabel">What they would do</span>Retrieve images for treatment and referrals.</div><div class="pc pe"><span class="plabel">For example</span>Kno2, Particle, Health Gorilla, CommonWell, Datavant</div></div>
+      <div class="psub"><div class="pc"><span class="plabel">Role</span><span class="chip">Imaging server</span></div><div class="pc"><span class="plabel">What they would do</span>Run a shared imaging server in front of small sites' archives.</div><div class="pc pe"><span class="plabel">For example</span>MiHIN</div></div>
+      <div class="psub"><div class="pc"><span class="plabel">Role</span><span class="chip">Authorization server</span></div><div class="pc"><span class="plabel">What they would do</span>Handle patient sign-in for small sites without an EHR.</div><div class="pc pe"><span class="plabel">For example</span>Verisma, Healthmark Group</div></div>
+    </div>
+  </div>
+  <div class="prow">
+    <div class="pc pt">Identity and access services</div>
+    <div class="psubs">
+      <div class="psub"><div class="pc"><span class="plabel">Role</span><span class="chip">Authorization server</span></div><div class="pc"><span class="plabel">What they would do</span>Provide an authorization server for sites without one.</div><div class="pc pe"><span class="plabel">For example</span>MedOauth</div></div>
+      <div class="psub"><div class="pc"><span class="plabel">Role</span><span class="chip chip-n">Supporting</span></div><div class="pc"><span class="plabel">What they would do</span>Check patients' identity when they sign in.</div><div class="pc pe"><span class="plabel">For example</span>CLEAR</div></div>
+    </div>
+  </div>
+  <div class="prow">
+    <div class="pc pt">Professional societies, standards groups, and researchers</div>
+    <div class="psubs">
+      <div class="psub"><div class="pc"><span class="plabel">Role</span><span class="chip chip-n">Supporting</span></div><div class="pc"><span class="plabel">What they would do</span>Provide test images, run testing events, build tools that check implementations, and help shape SMART Imaging Access through HL7's review and vote.</div><div class="pc pe"><span class="plabel">For example</span>ACR, RSNA, SIIM, MITRE, Argonaut, Sequoia</div></div>
+    </div>
+  </div>
+</div>
+
+<h3 id="testing">Testing</h3>
+<p>Testing the software does not require a health system. A basic test needs one client, one authorization server, and one imaging server, running on synthetic patients and studies in a vendor's sandbox. The specification's open-source reference software runs a public test server at <a href="https://imaging.argo.run" target="_blank" rel="noopener">imaging.argo.run</a> that can stand in for any of these roles, and it will be updated before testing starts.</p>
+<p>Testing fits into this timeline:</p>
+<ul class="timeline">
+  <li><b>November 1</b><span>Pledge agreed, and participants named for each role.</span></li>
+  <li><b>November and December</b><span>Vendors bring their parts online in their own sandboxes and test against the public test server.</span></li>
+  <li><b>January 2027</b><span>Vendors test against each other's sandboxes in the scenarios below, including at a virtual connectathon.</span></li>
+  <li><b>Early 2027</b><span>Health systems set up tested scenarios in their own test environments, with their own configuration and access rules, then make images available to real patients.</span></li>
+  <li><b>May 2027</b><span>HL7 consensus vote on SMART Imaging Access, including changes from testing.</span></li>
+</ul>
+<p>The first round needs two or three each of authorization servers, imaging servers, and image archives, and three or four clients. Three to five health systems would follow as data holders.</p>
+<div class="done">
+  <p>Testing succeeds when a patient's app downloads a full study from a pledged health system after one sign-in, and a referral service at another organization downloads a permitted study without a CD or a phone call.</p>
+</div>
+<h3>Reference environment and deployment scenarios</h3>
+<p>The first tab shows the reference environment that every vendor can test against. The others show deployment scenarios. Each box in a scenario names example organizations, and any example can be paired with any example in the other boxes.</p>
+<div class="tabs">
+<div class="tablist" role="tablist" aria-label="Reference environment and deployment scenarios"><button role="tab" id="tab0" aria-controls="panel0" aria-selected="true" tabindex="0">Open-source reference environment</button><button role="tab" id="tab1" aria-controls="panel1" aria-selected="false" tabindex="-1">EHR with PACS</button><button role="tab" id="tab2" aria-controls="panel2" aria-selected="false" tabindex="-1">Standalone imaging center</button></div>
+<div class="tabpanels">
+<div class="tabpanel" role="tabpanel" id="panel0" aria-labelledby="tab0">
+<figure>
+<svg class="fig" viewBox="0 0 880 232" role="img" aria-label="The open-source reference environment: the reference viewer or any app gets permission from the reference authorization server, then finds studies and downloads images from the reference imaging server, which has an archive built in. All run on synthetic patients and studies. A vendor can replace any part with its own.">
+  <defs><marker id="a0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ma"/></marker>
+  <marker id="a0d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="md"/></marker></defs>
+  <rect x="270" y="4" width="600" height="224" rx="10" class="region"/>
+  <text x="570" y="219" text-anchor="middle" class="t-small">Public test server with synthetic patients and studies</text>
+  <rect x="10" y="102" width="190" height="80" rx="8" class="box-key"/>
+  <text x="105" y="126" text-anchor="middle" class="t-title">Client</text>
+  <text x="105" y="146" text-anchor="middle" class="t-body">reference viewer</text>
+  <text x="105" y="162" text-anchor="middle" class="t-body">or any app</text>
+  <rect x="290" y="16" width="230" height="74" rx="8" class="box-key"/>
+  <text x="405" y="39" text-anchor="middle" class="t-title">Authorization server</text>
+  <text x="405" y="58" text-anchor="middle" class="t-body">reference server</text>
+  <rect x="290" y="112" width="360" height="80" rx="8" class="box-key"/>
+  <text x="380" y="136" text-anchor="middle" class="t-title">Imaging server</text>
+  <text x="380" y="155" text-anchor="middle" class="t-body">reference server</text>
+  <rect x="484" y="124" width="152" height="56" rx="6" class="region"/>
+  <text x="560" y="148" text-anchor="middle" class="t-title">Image archive</text>
+  <text x="560" y="166" text-anchor="middle" class="t-small">built in</text>
+  <polyline points="105,102 105,53 288,53" class="fa" marker-end="url(#a0)"/>
+  <text x="113" y="80" class="t-small">get permission</text>
+  <line x1="200" y1="152" x2="288" y2="152" class="fa" marker-end="url(#a0)"/>
+  <text x="206" y="144" class="t-small">studies, images</text>
+  <line x1="405" y1="112" x2="405" y2="92" class="fd" marker-end="url(#a0d)"/>
+  <text x="413" y="106" class="t-small">check permission</text>
+</svg>
+</figure>
+<p>The specification&#x27;s reference software plays every role on synthetic data. A vendor replaces one part with its own and tests it against the rest.</p>
+</div>
+<div class="tabpanel" role="tabpanel" id="panel1" aria-labelledby="tab1" hidden>
+<figure>
+<svg class="fig" viewBox="0 0 880 232" role="img" aria-label="A client, for example a patient app such as b.well or Fasten or a referral service such as Kno2, gets permission from an EHR such as Epic or Oracle Health. It finds studies and downloads images from an imaging server run by the EHR or the PACS vendor, which retrieves images from a PACS such as GE HealthCare or Philips.">
+  <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ma"/></marker>
+  <marker id="a1d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="md"/></marker></defs>
+  <rect x="270" y="4" width="600" height="224" rx="10" class="region"/>
+  <text x="570" y="219" text-anchor="middle" class="t-small">Vendor sandboxes first, then a health system&#x27;s test environment</text>
+  <rect x="10" y="102" width="190" height="80" rx="8" class="box-key"/>
+  <text x="105" y="126" text-anchor="middle" class="t-title">Client</text>
+  <text x="105" y="146" text-anchor="middle" class="t-body">e.g., b.well or Fasten,</text>
+  <text x="105" y="162" text-anchor="middle" class="t-body">or Kno2 for referrals</text>
+  <rect x="290" y="16" width="230" height="74" rx="8" class="box-key"/>
+  <text x="405" y="39" text-anchor="middle" class="t-title">Authorization server</text>
+  <text x="405" y="58" text-anchor="middle" class="t-body">e.g., Epic</text>
+  <text x="405" y="74" text-anchor="middle" class="t-body">or Oracle Health</text>
+  <rect x="290" y="112" width="230" height="80" rx="8" class="box-key"/>
+  <text x="405" y="136" text-anchor="middle" class="t-title">Imaging server</text>
+  <text x="405" y="155" text-anchor="middle" class="t-body">e.g., the EHR</text>
+  <text x="405" y="171" text-anchor="middle" class="t-body">or the PACS vendor</text>
+  <rect x="630" y="112" width="220" height="80" rx="8" class="box"/>
+  <text x="740" y="136" text-anchor="middle" class="t-title">Image archive</text>
+  <text x="740" y="155" text-anchor="middle" class="t-body">e.g., GE HealthCare</text>
+  <text x="740" y="171" text-anchor="middle" class="t-body">or Philips</text>
+  <line x1="520" y1="152" x2="628" y2="152" class="fd" marker-end="url(#a1d)"/>
+  <text x="575" y="144" text-anchor="middle" class="t-small">DICOMweb</text>
+  <polyline points="105,102 105,53 288,53" class="fa" marker-end="url(#a1)"/>
+  <text x="113" y="80" class="t-small">get permission</text>
+  <line x1="200" y1="152" x2="288" y2="152" class="fa" marker-end="url(#a1)"/>
+  <text x="206" y="144" class="t-small">studies, images</text>
+  <line x1="405" y1="112" x2="405" y2="92" class="fd" marker-end="url(#a1d)"/>
+  <text x="413" y="106" class="t-small">check permission</text>
+</svg>
+</figure>
+<p>The EHR handles sign-in. Either the EHR or the PACS vendor provides the imaging server, and the PACS supplies the images.</p>
+</div>
+<div class="tabpanel" role="tabpanel" id="panel2" aria-labelledby="tab2" hidden>
+<figure>
+<svg class="fig" viewBox="0 0 880 232" role="img" aria-label="A client, for example a patient app such as HealthEx or Flexpa or a referral service such as Particle, gets permission from a standalone service such as MedOauth or Verisma. It finds studies and downloads images from an imaging server provided by the PACS vendor or by open-source software in front of the center&#x27;s existing PACS.">
+  <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ma"/></marker>
+  <marker id="a2d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="md"/></marker></defs>
+  <rect x="270" y="4" width="600" height="224" rx="10" class="region"/>
+  <text x="570" y="219" text-anchor="middle" class="t-small">Vendor sandboxes first, then the imaging center&#x27;s environment</text>
+  <rect x="10" y="102" width="190" height="80" rx="8" class="box-key"/>
+  <text x="105" y="126" text-anchor="middle" class="t-title">Client</text>
+  <text x="105" y="146" text-anchor="middle" class="t-body">e.g., HealthEx or Flexpa,</text>
+  <text x="105" y="162" text-anchor="middle" class="t-body">or Particle for referrals</text>
+  <rect x="290" y="16" width="230" height="74" rx="8" class="box-key"/>
+  <text x="405" y="39" text-anchor="middle" class="t-title">Authorization server</text>
+  <text x="405" y="58" text-anchor="middle" class="t-body">e.g., MedOauth</text>
+  <text x="405" y="74" text-anchor="middle" class="t-body">or Verisma</text>
+  <rect x="290" y="112" width="230" height="80" rx="8" class="box-key"/>
+  <text x="405" y="136" text-anchor="middle" class="t-title">Imaging server</text>
+  <text x="405" y="155" text-anchor="middle" class="t-body">e.g., the PACS vendor</text>
+  <text x="405" y="171" text-anchor="middle" class="t-body">or open-source software</text>
+  <rect x="630" y="112" width="220" height="80" rx="8" class="box"/>
+  <text x="740" y="136" text-anchor="middle" class="t-title">Image archive</text>
+  <text x="740" y="155" text-anchor="middle" class="t-body">the center&#x27;s</text>
+  <text x="740" y="171" text-anchor="middle" class="t-body">existing PACS</text>
+  <line x1="520" y1="152" x2="628" y2="152" class="fd" marker-end="url(#a2d)"/>
+  <text x="575" y="144" text-anchor="middle" class="t-small">DICOMweb</text>
+  <polyline points="105,102 105,53 288,53" class="fa" marker-end="url(#a2)"/>
+  <text x="113" y="80" class="t-small">get permission</text>
+  <line x1="200" y1="152" x2="288" y2="152" class="fa" marker-end="url(#a2)"/>
+  <text x="206" y="144" class="t-small">studies, images</text>
+  <line x1="405" y1="112" x2="405" y2="92" class="fd" marker-end="url(#a2d)"/>
+  <text x="413" y="106" class="t-small">check permission</text>
+</svg>
+</figure>
+<p>An imaging center with no EHR uses a standalone authorization service, such as an access-management company or a records-request company it already works with. The imaging server is built into its PACS, or runs as open-source software in front of it. A regional health information exchange could run these for several centers.</p>
+</div>
+</div>
+</div>
+<script>
+(function(){
+  var list=document.querySelector('.tablist'); if(!list) return;
+  var tabs=[].slice.call(list.querySelectorAll('[role=tab]'));
+  function show(t){ tabs.forEach(function(b){ var on=b===t; b.setAttribute('aria-selected',on); b.tabIndex=on?0:-1; document.getElementById(b.getAttribute('aria-controls')).hidden=!on; }); }
+  tabs.forEach(function(b,i){
+    b.addEventListener('click',function(){show(b);});
+    b.addEventListener('keydown',function(e){ var d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0; if(d){ var n=tabs[(i+d+tabs.length)%tabs.length]; show(n); n.focus(); e.preventDefault(); } });
+  });
+})();
+</script>
+
+<details class="glossary" id="glossary">
+<summary><h2>Glossary</h2><span class="gcount">20 terms</span></summary>
+<dl class="gloss">
+  <dt>Access token</dt><dd>A temporary credential an app receives after the user approves it. The app presents it with each request.</dd>
+  <dt>Accession number</dt><dd>An ID the radiology department assigns to an imaging order. It is unique within one organization.</dd>
+  <dt>DICOM</dt><dd>The international standard for medical images and their details. Nearly every imaging device and archive uses it.</dd>
+  <dt>DICOMweb</dt><dd>DICOM's web API. WADO-RS is the part for downloading images, and QIDO-RS is the part for searching.</dd>
+  <dt>EHR</dt><dd>Electronic health record system. Certified EHRs must offer standard APIs for clinical data.</dd>
+  <dt>FHIR</dt><dd>Fast Healthcare Interoperability Resources, HL7's web API standard for health data.</dd>
+  <dt>Full fidelity</dt><dd>The original DICOM image files, with no compression loss and all their details.</dd>
+  <dt>Health information exchange</dt><dd>An organization that moves health data among providers in a region or network.</dd>
+  <dt>HL7</dt><dd>Health Level Seven International, the standards organization that publishes FHIR.</dd>
+  <dt>IHE</dt><dd>Integrating the Healthcare Enterprise, a group that writes profiles combining existing standards. XCA-I is its profile for sharing images across communities.</dd>
+  <dt>Image archive</dt><dd>A system that stores DICOM studies, such as a PACS or VNA. In the MVP it supplies studies to an imaging server.</dd>
+  <dt>Imaging server</dt><dd>The system that lists a patient's studies and delivers images to approved apps, checking permission on every request.</dd>
+  <dt>ImagingStudy</dt><dd>The FHIR resource that describes one imaging study and where to download its images.</dd>
+  <dt>PACS and VNA</dt><dd>Picture archiving and communication system, and vendor-neutral archive. Systems that store images.</dd>
+  <dt>SMART App Launch</dt><dd>The SMART on FHIR process in which a patient or clinician signs in and approves an app.</dd>
+  <dt>SMART Backend Services</dt><dd>The SMART on FHIR process for pre-approved systems that run with no user present.</dd>
+  <dt>SMART Imaging Access</dt><dd>The specification that extends SMART on FHIR permission to imaging studies and images.</dd>
+  <dt>Study</dt><dd>One imaging exam, such as a chest CT. A study contains series, and a series contains individual images.</dd>
+  <dt>Study Instance UID</dt><dd>The globally unique ID that DICOM assigns to every study.</dd>
+  <dt>Token introspection</dt><dd>A standard way for a service to ask the authorization server whether a token is valid and what it allows.</dd>
+</dl>
+</details>
+<script>
+(function(){
+  var g=document.getElementById('glossary');
+  function openIfHash(){ if(location.hash==='#glossary') g.open=true; }
+  openIfHash(); window.addEventListener('hashchange', openIfHash);
+})();
+</script>
+
+<footer>Draft proposal, September 2026, for the CMS Health Tech Ecosystem Diagnostic Imaging workgroup, which meets every other Tuesday at 4 pm Eastern and continues discussion on the Health Tech Ecosystem Slack. Based on the SMART Imaging Access draft of September 23, 2026.</footer>
+</div>
+</body>
+</html>
