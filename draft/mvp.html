@@ -198,7 +198,7 @@
     <marker id="arrd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="md"/></marker>
   </defs>
   <rect x="325" y="8" width="565" height="272" rx="10" class="region"/>
-  <text x="607" y="268" text-anchor="middle" class="t-small">Data holder: a health system, imaging center, or practice</text>
+  <text x="607" y="268" text-anchor="middle" class="t-small">Provider: a health system, imaging center, or practice</text>
 
   <rect x="20" y="100" width="200" height="100" rx="8" class="box-key"/>
   <text x="120" y="138" text-anchor="middle" class="t-title">Client</text>
@@ -235,18 +235,17 @@
 </div>
 
 <h2 id="pledge">Proposed pledge</h2>
-<p>We propose a minimum viable product, or MVP: the smallest set of capabilities that lets patients and clinicians get images without a disk. It is a subset of SMART Imaging Access, organized into five roles. One organization or product can fill several roles. The pledge text below would replace the initial draft that CMS published at launch.</p>
+<p>We propose a minimum viable product, or MVP: the smallest set of capabilities that lets patients and clinicians get images without a disk. The pledge below says what each kind of organization commits to, and would replace the initial draft that CMS published at launch. The sections after it turn those commitments into roles and requirements that can be tested.</p>
 <div class="pledge">
-  <p>We pledge to make diagnostic images available electronically for patient access, treatment, and other permitted uses, so they no longer need to travel on disks.</p>
-  <p>We will implement SMART Imaging Access, following its profiles of FHIR and DICOMweb. This approach lets an organization make its images available to any approved app, and it lays groundwork for connecting image data to network-based exchange.</p>
-  <p>We will test our implementation with other pledgers by January 2027 and use what we learn to improve the specification and drive real-world adoption.</p>
-  <p>We will fill one or more of these roles:</p>
+  <p>We pledge to make diagnostic images available electronically for patient access, treatment, and other permitted uses, so that sharing images with any provider is as easy as handing over a disc.</p>
+  <p>We will use standards-based APIs (for example, FHIR and DICOMweb as profiled in SMART Imaging Access). Patients will reach their images with the same sign-in they already use for their clinical records, and with CMS-aligned digital identity credentials as networks adopt them. This lets any approved app get the images, and it lays groundwork for network-based exchange.</p>
+  <p>We will start testing with other participants by January 2027, using the workgroup's MVP as the common path, and use what we learn to improve it and drive real-world adoption.</p>
+  <p>We will meet the commitments below that apply to us:</p>
   <ul>
-    <li><b>Data holder.</b> Make our studies and reports available through these services, first in a test environment and then for real patients.</li>
-    <li><b>Authorization server.</b> Let patients and clinicians approve apps for imaging, tell apps where imaging is available, and let imaging servers check the permissions we grant.</li>
-    <li><b>Imaging server.</b> List a patient's studies through FHIR ImagingStudy and return full-fidelity DICOM through DICOMweb to approved apps, applying each organization's access rules.</li>
-    <li><b>Image archive.</b> Provide studies to an imaging server through DICOMweb search and retrieval. The archive can be part of the imaging server or a separate system behind it.</li>
-    <li><b>Client.</b> Build an app or service that finds and downloads full-fidelity studies this way, for patients or clinicians.</li>
+    <li><b>Providers</b> make full-fidelity images available to any app a patient chooses and to other providers for treatment, first in a test environment and then for real patients. They accept images that patients share electronically instead of asking for a disc: open shared links, view the images, and download the DICOM files for use in care. They do the security review and setup needed to make this routine.</li>
+    <li><b>Companies that handle sign-in for providers</b>, such as EHR and identity vendors, let authorized users approve apps for imaging access, tell apps where to find the images, and confirm to imaging systems what each app is allowed to see.</li>
+    <li><b>Companies that store or serve images</b>, such as PACS, archive and cloud vendors, deliver full-fidelity studies through standards-based APIs that work with the provider's sign-in, without a separate business agreement for each app.</li>
+    <li><b>App and service developers</b> retrieve full-fidelity studies through these APIs for patients or clinicians. Patient apps will let patients re-share what they retrieve, for example with a time-limited, revocable link or QR code that gives the recipient a viewer and a full-fidelity download.</li>
   </ul>
 </div>
 
@@ -261,16 +260,18 @@
 </div>
 
 <h2 id="requirements">Requirements by role</h2>
+<p>Each commitment in the pledge maps to one or more roles. Providers fill the provider role. Companies that handle sign-in fill the authorization server role. Companies that store or serve images fill the imaging server role, with the image archive behind or within it. App and service developers fill the client role.</p>
 <p>Technical details for each role are in the <a href="https://build.fhir.org/ig/argonautproject/smart-imaging/" target="_blank" rel="noopener">SMART Imaging Access specification</a>.</p>
 
 
 <div class="role">
-  <h3>Data holder</h3>
+  <h3>Provider</h3>
   <p class="what">A health system, hospital, imaging center, or practice.</p>
   <ul>
     <li>Set up a test environment with synthetic patients and realistic studies, including at least a CT, an MRI, and a plain X-ray.</li>
     <li>Make reports available through the clinical system and images through the imaging server. Including each study's unique ID or accession number in its report is recommended, so apps can match reports to images.</li>
     <li>Set a date for making images available to real patients.</li>
+    <li>Accept images that patients share electronically instead of asking for a disc, and do the security review and setup needed to make this routine.</li>
   </ul>
 </div>
 
@@ -280,7 +281,7 @@
   <ul>
     <li>Let patients and clinicians approve apps for imaging with the same sign-in they use for clinical data.</li>
     <li>Publish the imaging server's location in the configuration information the server already provides to apps.</li>
-    <li>Let the imaging server check the permissions it grants.</li>
+    <li>Confirm to the imaging server what each client is allowed to see.</li>
     <li>Access for pre-approved systems that run with no user present, such as a referral service, is optional and encouraged. A server that supports only this kind of access does not meet the MVP.</li>
   </ul>
 </div>
@@ -292,13 +293,13 @@
     <li>List a patient's studies using FHIR.</li>
     <li>Return the original DICOM files for a whole study, a series, or a single image.</li>
     <li>Small preview images are recommended, so apps can show thumbnails before downloading a study.</li>
-    <li>Check the permission on every request, and release only the studies the data holder's access rules allow. The <a href="https://build.fhir.org/ig/argonautproject/smart-imaging/authorization-patterns.html" target="_blank" rel="noopener">specification describes ways</a> to divide this work between an EHR, an imaging server, and an image archive.</li>
+    <li>Check the permission on every request, and release only the studies the provider's access rules allow. The <a href="https://build.fhir.org/ig/argonautproject/smart-imaging/authorization-patterns.html" target="_blank" rel="noopener">specification describes ways</a> to divide this work between an EHR, an imaging server, and an image archive.</li>
   </ul>
 </div>
 
 <div class="role">
   <h3>Image archive</h3>
-  <p class="what">A PACS, vendor-neutral archive, or cloud archive.</p>
+  <p class="what">A PACS, vendor-neutral archive, or cloud archive that supplies an imaging server instead of serving apps itself. In the pledge, this is part of the imaging server role.</p>
   <ul>
     <li>Let the imaging server search for studies and retrieve the original DICOM files through DICOMweb.</li>
     <li>The imaging server and the archive arrange their own connection and credentials. Apps never connect to a separate archive directly.</li>
@@ -311,6 +312,7 @@
   <ul>
     <li>Find the imaging server from the authorization server's configuration, or use a configured address.</li>
     <li>Download a full study, then display it, import it, or give it to the patient.</li>
+    <li>Let patients re-share what they retrieve, for example with a link or QR code.</li>
     <li>Wait and retry when the imaging server asks, and search again if a download is refused.</li>
   </ul>
 </div>
@@ -324,7 +326,7 @@
   <div class="prow">
     <div class="pc pt">Health systems and imaging centers</div>
     <div class="psubs shared">
-      <div class="pc" style="grid-column:1;grid-row:1"><span class="plabel">Role</span><span class="chip">Data holder</span></div><div class="pc" style="grid-column:2;grid-row:1"><span class="plabel">What they would do</span>Share their patients' studies and reports, first in a test environment and then for real patients.</div>
+      <div class="pc" style="grid-column:1;grid-row:1"><span class="plabel">Role</span><span class="chip">Provider</span></div><div class="pc" style="grid-column:2;grid-row:1"><span class="plabel">What they would do</span>Share their patients' studies and reports, and accept images patients bring from elsewhere instead of asking for a disc.</div>
       <div class="pc sep" style="grid-column:1;grid-row:2"><span class="plabel">Role</span><span class="chip">Client</span></div><div class="pc sep" style="grid-column:2;grid-row:2"><span class="plabel">What they would do</span>Retrieve outside images before a patient's visit.</div>
       <div class="pc pe pshared" style="grid-column:3;grid-row:1 / span 2"><span class="plabel">For example</span>Penn Medicine, UCSF, Cincinnati Children's, Froedtert ThedaCare, Providence, Atlantic Health, Ochsner, Cleveland Clinic, Emory, Weill Cornell, Tennessee Oncology</div>
     </div>
@@ -382,7 +384,7 @@
   <li><b>Early 2027</b><span>Health systems set up tested scenarios in their own test environments, with their own configuration and access rules, then make images available to real patients.</span></li>
   <li><b>May 2027</b><span>HL7 consensus vote on SMART Imaging Access, including changes from testing.</span></li>
 </ul>
-<p>The first round needs two or three each of authorization servers, imaging servers, and image archives, and three or four clients. Three to five health systems would follow as data holders.</p>
+<p>The first round needs two or three each of authorization servers, imaging servers, and image archives, and three or four clients. Three to five health systems would follow as providers.</p>
 <div class="done">
   <p>Testing succeeds when a patient's app downloads a full study from a pledged health system after one sign-in, and a referral service at another organization downloads a permitted study without a CD or a phone call.</p>
 </div>
