@@ -154,6 +154,11 @@
   details.glossary summary::before { content: "\25B8"; color: var(--accent-ink); font-size: 18px; }
   details.glossary[open] summary::before { content: "\25BE"; }
   .gcount { font-size: 14px; color: var(--ink-3); }
+  .anchor { margin-left: .3em; color: var(--ink-3); text-decoration: none; font-weight: 400; opacity: 0; transition: opacity .15s; }
+  h2:hover > .anchor, h3:hover > .anchor, .pledge [id]:hover > .anchor, .anchor:focus { opacity: 1; }
+  .anchor:hover { color: var(--accent-ink); }
+  [id] { scroll-margin-top: 16px; }
+  .pledge [id]:target { background: var(--accent-soft); border-radius: 4px; }
   .timeline { list-style: none; padding: 0; margin: 14px 0; border-left: 2px solid var(--line); }
   .timeline li { position: relative; padding: 0 0 14px 22px; margin: 0; display: grid; grid-template-columns: 190px 1fr; gap: 12px; }
   @media (max-width: 600px) { .timeline li { grid-template-columns: 1fr; gap: 2px; } }
@@ -237,15 +242,15 @@
 <h2 id="pledge">Proposed pledge</h2>
 <p>We propose a minimum viable product, or MVP: the smallest set of capabilities that lets patients and clinicians get images without a disk. The pledge below says what each kind of organization commits to, and would replace the initial draft that CMS published at launch. The sections after it turn those commitments into roles and requirements that can be tested.</p>
 <div class="pledge">
-  <p>We pledge to make diagnostic images available electronically for patient access, treatment, and other permitted uses, so that sharing images with any provider is as easy as handing over a disc.</p>
-  <p>We will use standards-based APIs (for example, FHIR and DICOMweb as profiled in SMART Imaging Access). Patients will reach their images with the same sign-in they already use for their clinical records, and with CMS-aligned digital identity credentials as networks adopt them. This lets any approved app get the images, and it lays groundwork for network-based exchange.</p>
-  <p>We will start testing with other participants by January 2027, using the workgroup's MVP as the common path, and use what we learn to improve it and drive real-world adoption.</p>
+  <p id="pledge-purpose">We pledge to make diagnostic images available electronically for patient access, treatment, and other permitted uses, so that sharing images with any provider is as easy as handing over a disc.</p>
+  <p id="pledge-standards">We will use standards-based APIs (for example, FHIR and DICOMweb as profiled in SMART Imaging Access). Patients will reach their images with the same sign-in they already use for their clinical records, and with CMS-aligned digital identity credentials as networks adopt them. This lets any approved app get the images, and it lays groundwork for network-based exchange.</p>
+  <p id="pledge-testing">We will start testing with other participants by January 2027, using the workgroup's MVP as the common path, and use what we learn to improve it and drive real-world adoption.</p>
   <p>We will meet the commitments below that apply to us:</p>
   <ul>
-    <li><b>Providers</b> make full-fidelity images available to any app a patient chooses and to other providers for treatment, first in a test environment and then for real patients. They accept images that patients share electronically instead of asking for a disc: open shared links, view the images, and download the DICOM files for use in care. They do the security review and setup needed to make this routine.</li>
-    <li><b>Companies that handle sign-in for providers</b>, such as EHR and identity vendors, let authorized users approve apps for imaging access, tell apps where to find the images, and confirm to imaging systems what each app is allowed to see.</li>
-    <li><b>Companies that store or serve images</b>, such as PACS, archive and cloud vendors, deliver full-fidelity studies through standards-based APIs that work with the provider's sign-in, without a separate business agreement for each app.</li>
-    <li><b>App and service developers</b> retrieve full-fidelity studies through these APIs for patients or clinicians. Patient apps will let patients re-share what they retrieve, for example with a time-limited, revocable link or QR code that gives the recipient a viewer and a full-fidelity download.</li>
+    <li id="pledge-providers"><b>Providers</b> make full-fidelity images available to any app a patient chooses and to other providers for treatment, first in a test environment and then for real patients. They accept images that patients share electronically instead of asking for a disc: open shared links, view the images, and download the DICOM files for use in care. They do the security review and setup needed to make this routine.</li>
+    <li id="pledge-sign-in"><b>Companies that handle sign-in for providers</b>, such as EHR and identity vendors, let authorized users approve apps for imaging access, tell apps where to find the images, and confirm to imaging systems what each app is allowed to see.</li>
+    <li id="pledge-images"><b>Companies that store or serve images</b>, such as PACS, archive and cloud vendors, deliver full-fidelity studies through standards-based APIs that work with the provider's sign-in, without a separate business agreement for each app.</li>
+    <li id="pledge-apps"><b>App and service developers</b> retrieve full-fidelity studies through these APIs for patients or clinicians. Patient apps will let patients re-share what they retrieve, for example with a time-limited, revocable link or QR code that gives the recipient a viewer and a full-fidelity download.</li>
   </ul>
 </div>
 
@@ -265,7 +270,7 @@
 
 
 <div class="role">
-  <h3>Provider</h3>
+  <h3 id="req-provider">Provider</h3>
   <p class="what">A health system, hospital, imaging center, or practice.</p>
   <ul>
     <li>Set up a test environment with synthetic patients and realistic studies, including at least a CT, an MRI, and a plain X-ray.</li>
@@ -276,7 +281,7 @@
 </div>
 
 <div class="role">
-  <h3>Authorization server</h3>
+  <h3 id="req-authorization-server">Authorization server</h3>
   <p class="what">Often part of an EHR, or a separate identity or access service.</p>
   <ul>
     <li>Let patients and clinicians approve apps for imaging with the same sign-in they use for clinical data.</li>
@@ -287,7 +292,7 @@
 </div>
 
 <div class="role">
-  <h3>Imaging server</h3>
+  <h3 id="req-imaging-server">Imaging server</h3>
   <p class="what">A service in front of an image archive, an archive with these interfaces built in, a cloud imaging platform, or an EHR's imaging module.</p>
   <ul>
     <li>List a patient's studies using FHIR.</li>
@@ -298,7 +303,7 @@
 </div>
 
 <div class="role">
-  <h3>Image archive</h3>
+  <h3 id="req-image-archive">Image archive</h3>
   <p class="what">A PACS, vendor-neutral archive, or cloud archive that supplies an imaging server instead of serving apps itself. In the pledge, this is part of the imaging server role.</p>
   <ul>
     <li>Let the imaging server search for studies and retrieve the original DICOM files through DICOMweb.</li>
@@ -307,7 +312,7 @@
 </div>
 
 <div class="role">
-  <h3>Client</h3>
+  <h3 id="req-client">Client</h3>
   <p class="what">A patient's app, a clinician's viewer, a clinical intake tool, or a referral service.</p>
   <ul>
     <li>Find the imaging server from the authorization server's configuration, or use a configured address.</li>
@@ -388,7 +393,7 @@
 <div class="done">
   <p>Testing succeeds when a patient's app downloads a full study from a pledged health system after one sign-in, and a referral service at another organization downloads a permitted study without a CD or a phone call.</p>
 </div>
-<h3>Reference environment and deployment scenarios</h3>
+<h3 id="scenarios">Reference environment and deployment scenarios</h3>
 <p>The first tab shows the reference environment that every vendor can test against. The others show deployment scenarios. Each box in a scenario names example organizations, and any example can be paired with any example in the other boxes.</p>
 <div class="tabs">
 <div class="tablist" role="tablist" aria-label="Reference environment and deployment scenarios"><button role="tab" id="tab0" aria-controls="panel0" aria-selected="true" tabindex="0">Open-source reference environment</button><button role="tab" id="tab1" aria-controls="panel1" aria-selected="false" tabindex="-1">EHR with PACS</button><button role="tab" id="tab2" aria-controls="panel2" aria-selected="false" tabindex="-1">Standalone imaging center</button></div>
@@ -542,5 +547,19 @@
 
 <footer>Draft proposal, September 2026, for the CMS Health Tech Ecosystem Diagnostic Imaging workgroup, which meets every other Tuesday at 4 pm Eastern and continues discussion on the Health Tech Ecosystem Slack. Based on the SMART Imaging Access draft of September 23, 2026.</footer>
 </div>
+<script>
+(function(){
+  var els=document.querySelectorAll('h2, h3[id], .pledge [id]');
+  [].forEach.call(els,function(el){
+    if(el.closest('summary')) return;
+    var id=el.id||(el.parentElement&&el.parentElement.id);
+    if(!id) return;
+    var a=document.createElement('a');
+    a.className='anchor'; a.href='#'+id; a.textContent='\u00b6';
+    a.setAttribute('aria-label','Link to this section');
+    el.appendChild(a);
+  });
+})();
+</script>
 </body>
 </html>
