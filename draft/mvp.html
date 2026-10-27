@@ -159,6 +159,12 @@
   .anchor:hover { color: var(--accent-ink); }
   [id] { scroll-margin-top: 16px; }
   .pledge [id]:target { background: var(--accent-soft); border-radius: 4px; }
+  .term { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: help; text-decoration: underline dotted var(--ink-3); text-underline-offset: 3px; }
+  .term:hover, .term[aria-expanded="true"] { text-decoration-color: var(--accent); color: var(--accent-ink); }
+  .term:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  .termcard { position: absolute; z-index: 20; max-width: min(420px, calc(100vw - 24px)); background: var(--paper); color: var(--ink); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.15); padding: 12px 14px; font-size: 14.5px; line-height: 1.5; }
+  .termcard b { display: block; margin-bottom: 4px; }
+  .termcard[hidden] { display: none; }
   .timeline { list-style: none; padding: 0; margin: 14px 0; border-left: 2px solid var(--line); }
   .timeline li { position: relative; padding: 0 0 14px 22px; margin: 0; display: grid; grid-template-columns: 190px 1fr; gap: 12px; }
   @media (max-width: 600px) { .timeline li { grid-template-columns: 1fr; gap: 2px; } }
@@ -193,7 +199,7 @@
 
 <div class="bg" id="background">
 <h2>Background</h2>
-<p>The Centers for Medicare &amp; Medicaid Services (CMS) runs the Health Tech Ecosystem, a voluntary pledge program. In July 2026 CMS launched its Diagnostic Imaging workgroup, known as Ditch the Disk, with an <a href="https://www.cms.gov/initiatives/health-technology-ecosystem/overview/early-adopters-all-pledgees/additional-use-case/additional-use-case-diagnostic-imaging-workgroup-ditch-disk" target="_blank" rel="noopener">initial draft pledge</a>: full-fidelity images, meaning the original image files, for patient access, treatment, and payment. The workgroup is writing the actual pledge, with enough detail to build and test, by November 1.</p>
+<p>The Centers for Medicare &amp; Medicaid Services (CMS) runs the Health Tech Ecosystem, a voluntary pledge program. In July 2026 CMS launched its Diagnostic Imaging workgroup, known as Ditch the Disk, with an <a href="https://www.cms.gov/initiatives/health-technology-ecosystem/overview/early-adopters-all-pledgees/additional-use-case/additional-use-case-diagnostic-imaging-workgroup-ditch-disk" target="_blank" rel="noopener">initial draft pledge</a>: <button type="button" class="term" data-term="def-full-fidelity" aria-expanded="false">full-fidelity</button> images for patient access, treatment, and payment. The workgroup is writing the actual pledge, with enough detail to build and test, by November 1.</p>
 <p>Patients and clinicians can already connect apps to many hospitals and access clinical records through standard APIs, while standalone imaging centers often run their own portals or systems. Diagnostic images, however, usually live in separate imaging systems that external apps and outside care teams cannot easily reach, so clinicians who need outside images often wait for a CD or request them by phone and fax. In a kickoff survey of 22 participating organizations, 80% reported that physical CDs and DVDs remain a primary way images move.</p>
 <p>SMART Imaging Access is a specification for exposing diagnostic imaging through a single standard API surface. It combines SMART on FHIR for sign-in and permission, FHIR for study discovery, and DICOMweb for medical images. Whether a patient is pulling their own scans into an app, a clinician is using an app at the point of care, or another provider is retrieving prior scans for treatment, the imaging server works the same way. The <a href="https://build.fhir.org/ig/argonautproject/smart-imaging/" target="_blank" rel="noopener">current draft</a> is an active project at HL7, the standards organization that publishes FHIR.</p>
 <figure>
@@ -242,15 +248,15 @@
 <h2 id="pledge">Proposed pledge</h2>
 <p>We propose a minimum viable product, or MVP: the smallest set of capabilities that lets patients and care teams get full-fidelity images without a disc. The pledge below says what each participant commits to for the roles it plays, and would replace the initial draft that CMS published at launch. The sections after it spell out the requirements for each role and how they can be tested.</p>
 <div class="pledge">
-  <p id="pledge-purpose">We pledge to make full-fidelity diagnostic images available electronically for patient access, treatment, and other permitted uses—replacing physical CDs and DVDs so patients and the care teams treating them can get and share images without friction.</p>
+  <p id="pledge-purpose">We pledge to make <button type="button" class="term" data-term="def-full-fidelity" aria-expanded="false">full-fidelity</button> diagnostic images available electronically for patient access, treatment, and other permitted uses—replacing physical CDs and DVDs so patients and the care teams treating them can get and share images without friction.</p>
   <p id="pledge-standards">We will use standards-based APIs (for example, FHIR and DICOMweb as profiled in SMART Imaging Access). Patients can get their images in any app they choose—signing in directly with a provider or through CMS-aligned networks and digital identity credentials—and clinicians can use the same interface in their own apps and to pull outside studies for care.</p>
   <p id="pledge-testing">We will start testing with other participants by January 2027, using the workgroup's MVP as our common technical path, and use what we learn to refine the standards and drive real-world adoption.</p>
   <p>We will meet the commitments below for each role we play:</p>
   <ul>
     <li id="pledge-providers"><b>Providers</b> (health systems, hospitals, imaging centers, and practices): We will make full-fidelity images and reports available through standard APIs to the apps our patients and clinicians use and to other providers for treatment, first in a test environment and then in production. When we care for patients with outside imaging, we will work to replace CDs by pulling prior studies electronically before the visit and by setting up safe, routine ways to accept studies that patients share with us electronically.</li>
-    <li id="pledge-sign-in"><b>Authorization servers</b> (EHRs, patient portals, and identity services): We will let patients and clinicians authorize apps for imaging access, support authorized treatment requests from other providers, tell clients where to find the imaging server, and confirm to the imaging server what each requester is allowed to see.</li>
-    <li id="pledge-images"><b>Imaging servers and archives</b> (PACS, VNAs, cloud services, and EHR imaging modules): We will expose study lists and deliver full-fidelity studies through standard APIs, releasing only what the authorization server confirms each requester is allowed to see, without requiring a separate business agreement for each patient-chosen app.</li>
-    <li id="pledge-apps"><b>Clients</b> (patient apps, clinical apps, and referral services): We will retrieve full-fidelity studies through these APIs for patients or care teams. If we build a patient app, we will let patients view, use, and re-share their images—for example, with a time-limited, revocable link or QR code that provides a viewer and a full-fidelity download. If we build a clinical app or referral service, we will use these APIs at the point of care or to pull permitted outside studies before a patient's visit.</li>
+    <li id="pledge-sign-in"><b>Authorization servers</b> (Health IT including EHRs, patient portals, and identity services): We will let patients and clinicians authorize apps for imaging access, support authorized treatment requests from other providers, tell clients where to find the imaging server, and confirm to the imaging server what each requester is allowed to see.</li>
+    <li id="pledge-images"><b>Imaging servers and archives</b> (imaging systems including PACS, VNAs, cloud services, and EHR imaging modules): We will support imaging discovery and full-fidelity access to data from individual studies through standard APIs, releasing only what the authorization server confirms each requester is allowed to see, without requiring a separate business agreement for each patient-chosen app.</li>
+    <li id="pledge-apps"><b>Clients</b> (software including patient apps, clinical apps, and referral services): We will retrieve full-fidelity studies through these APIs for patients or care teams. If we build a patient app, we will let patients view, use, and re-share their images—for example, with a time-limited, revocable link or QR code that provides a viewer and a full-fidelity download. If we build a clinical app or referral service, we will use these APIs at the point of care or to pull permitted outside studies before a patient's visit.</li>
   </ul>
 </div>
 
@@ -259,7 +265,7 @@
 <div class="principles">
   <div class="pr"><b>One imaging server for all requesters</b><span>Patient apps, point-of-care clinician apps, and cross-site treatment queries all use the same study search and image download interface. Only the way permission is granted differs.</span></div>
   <div class="pr"><b>Existing open standards</b><span>SMART, FHIR, and DICOMweb are used as they are deployed today, so any conformant client and server can connect using standard interfaces.</span></div>
-  <div class="pr"><b>Original images</b><span>Clients receive the original DICOM files, with lightweight previews recommended for fast viewing and low-bandwidth settings.</span></div>
+  <div class="pr"><b>Full-fidelity images</b><span>Clients receive <button type="button" class="term" data-term="def-full-fidelity" aria-expanded="false">full-fidelity</button> DICOM objects. Rendered previews are optional.</span></div>
   <div class="pr"><b>A building block for networks</b><span>It starts with each hospital or imaging center offering a standard imaging interface, and grows as health information networks connect to that same interface.</span></div>
   <div class="pr"><b>Local access rules</b><span>Each organization's own systems decide who may see which studies. The MVP enforces those decisions without defining them.</span></div>
 </div>
@@ -295,8 +301,8 @@
   <p class="what">A service in front of an image archive, an archive with these interfaces built in, a cloud imaging platform, or an EHR's imaging module.</p>
   <ul>
     <li>List a patient's studies using FHIR <code>ImagingStudy</code>.</li>
-    <li>Return the original DICOM files through DICOMweb WADO-RS for a whole study, a series, or a single image.</li>
-    <li>Small preview images are recommended, so apps can show thumbnails or operate over lower-bandwidth connections before downloading a full study.</li>
+    <li>Return full-fidelity DICOM objects through DICOMweb WADO-RS for a whole study, a series, or a single image.</li>
+    <li>Rendered images and previews are optional.</li>
     <li>Check the permission on every request, and release only the studies the authorization server confirms each client is allowed to see. The <a href="https://build.fhir.org/ig/argonautproject/smart-imaging/authorization-patterns.html" target="_blank" rel="noopener">specification describes ways</a> to divide this work between an authorization server, an imaging server, and an image archive.</li>
   </ul>
 </div>
@@ -305,7 +311,7 @@
   <h3 id="req-image-archive">Image archive</h3>
   <p class="what">A PACS, vendor-neutral archive, or cloud archive that supplies an imaging server instead of serving apps itself. In the pledge, this is part of the imaging server and archive role.</p>
   <ul>
-    <li>Let the imaging server search for studies and retrieve the original DICOM files through DICOMweb.</li>
+    <li>Let the imaging server search for studies and retrieve full-fidelity DICOM objects through DICOMweb.</li>
     <li>The imaging server and the archive arrange their own connection and credentials. Apps never connect to a separate archive directly.</li>
   </ul>
 </div>
@@ -520,7 +526,7 @@
   <dt>DICOMweb</dt><dd>DICOM's web API. WADO-RS is the part for downloading images, and QIDO-RS is the part for searching.</dd>
   <dt>EHR</dt><dd>Electronic health record system. Certified EHRs must offer standard APIs for clinical data.</dd>
   <dt>FHIR</dt><dd>Fast Healthcare Interoperability Resources, HL7's web API standard for health data.</dd>
-  <dt>Full fidelity</dt><dd>The original DICOM image files, with no compression loss and all their details.</dd>
+  <dt id="def-full-fidelity">Full fidelity</dt><dd>The DICOM objects for a study exactly as retained in the source organization's archive of record — the same objects that organization would write to a CD — delivered without any additional lossy compression, downsampling, or removal of DICOM attributes in transit. Where the archive stores a study in a lossy transfer syntax under its own retention policy, that stored form is full fidelity for the purposes of this pledge, and the images carry the standard DICOM lossy-compression attributes so recipients can tell.</dd>
   <dt>Health information exchange</dt><dd>An organization that moves health data among providers in a region or network.</dd>
   <dt>HL7</dt><dd>Health Level Seven International, the standards organization that publishes FHIR.</dd>
   <dt>IHE</dt><dd>Integrating the Healthcare Enterprise, a group that writes profiles combining existing standards. XCA-I is its profile for sharing images across communities.</dd>
@@ -539,7 +545,7 @@
 <script>
 (function(){
   var g=document.getElementById('glossary');
-  function openIfHash(){ if(location.hash==='#glossary') g.open=true; }
+  function openIfHash(){ var t=location.hash&&document.getElementById(location.hash.slice(1)); if(t&&(t===g||g.contains(t))){ g.open=true; if(t!==g) t.scrollIntoView(); } }
   openIfHash(); window.addEventListener('hashchange', openIfHash);
 })();
 </script>
@@ -558,6 +564,40 @@
     a.setAttribute('aria-label','Link to this section');
     el.appendChild(a);
   });
+})();
+</script>
+<script>
+(function(){
+  var card=document.createElement('div'); card.className='termcard'; card.setAttribute('role','tooltip'); card.id='termcard'; card.hidden=true;
+  document.body.appendChild(card);
+  var cur=null, pinned=false, hideT=null;
+  function show(btn){
+    var dt=document.getElementById(btn.dataset.term); if(!dt) return;
+    var dd=dt.nextElementSibling;
+    card.innerHTML='<b>'+dt.textContent+'</b>'+(dd?dd.innerHTML:'');
+    card.hidden=false;
+    if(cur&&cur!==btn) cur.setAttribute('aria-expanded','false');
+    cur=btn; btn.setAttribute('aria-expanded','true'); btn.setAttribute('aria-describedby','termcard');
+    var r=btn.getBoundingClientRect(), w=card.offsetWidth, h=card.offsetHeight;
+    var left=Math.max(12, Math.min(r.left+window.scrollX, window.scrollX+document.documentElement.clientWidth-w-12));
+    var top=r.bottom+window.scrollY+8;
+    if(r.bottom+h+16>window.innerHeight && r.top-h-8>0) top=r.top+window.scrollY-h-8;
+    card.style.left=left+'px'; card.style.top=top+'px';
+  }
+  function hide(){ card.hidden=true; pinned=false; if(cur){cur.setAttribute('aria-expanded','false'); cur.removeAttribute('aria-describedby');} cur=null; }
+  document.querySelectorAll('.term').forEach(function(btn){
+    btn.addEventListener('click',function(e){ e.stopPropagation(); if(cur===btn&&pinned){hide();} else {show(btn); pinned=true;} });
+    btn.addEventListener('mouseenter',function(){ clearTimeout(hideT); if(!pinned) show(btn); });
+    btn.addEventListener('mouseleave',function(){ if(!pinned) hideT=setTimeout(hide,200); });
+    btn.addEventListener('focus',function(){ if(!pinned) show(btn); });
+    btn.addEventListener('blur',function(){ if(!pinned) hide(); });
+  });
+  card.addEventListener('mouseenter',function(){ clearTimeout(hideT); });
+  card.addEventListener('mouseleave',function(){ if(!pinned) hideT=setTimeout(hide,200); });
+  card.addEventListener('click',function(e){ e.stopPropagation(); });
+  document.addEventListener('click',function(){ if(!card.hidden) hide(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&!card.hidden){ var b=cur; hide(); if(b) b.focus(); } });
+  window.addEventListener('resize',function(){ if(cur) show(cur); });
 })();
 </script>
 </body>
