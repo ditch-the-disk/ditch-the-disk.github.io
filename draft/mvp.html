@@ -271,58 +271,47 @@
 </div>
 
 <h2 id="requirements">Requirements by role</h2>
-<p>Each commitment in the pledge maps directly to the roles below. One organization or product may play several roles (for example, an EHR may act as the authorization server, the imaging server in front of a PACS, and a clinical client). Technical details for each role are in the <a href="https://build.fhir.org/ig/argonautproject/smart-imaging/" target="_blank" rel="noopener">SMART Imaging Access specification</a>.</p>
+<p>Each commitment in the pledge maps to the roles below, and one organization or product may play several roles. Every participant joins at least one public sandbox demo using synthetic patients and realistic studies, including a CT, an MRI, and a plain X-ray. Technical details are in the <a href="https://build.fhir.org/ig/argonautproject/smart-imaging/" target="_blank" rel="noopener">SMART Imaging Access specification</a>.</p>
 
 
 <div class="role">
-  <h3 id="req-provider">Provider</h3>
-  <p class="what">A health system, hospital, imaging center, or practice.</p>
+  <h3 id="req-provider">Providers</h3>
+  <p class="what">Health systems, hospitals, imaging centers, and practices.</p>
   <ul>
-    <li>Set up a test environment with synthetic patients and realistic studies, including at least a CT, an MRI, and a plain X-ray.</li>
-    <li>Make reports available through the clinical system and images through the imaging server. Including each study's unique ID or accession number in its report is recommended, so apps can match reports to images.</li>
+    <li>Make reports available through the clinical system and images through the imaging server. Including each study's unique ID or accession number in its report is recommended so apps can match reports to images.</li>
     <li>Set a date for making images available in production for real patients and care teams.</li>
-    <li>Establish a routine workflow to accept outside images electronically instead of asking for a disc—retrieving prior studies electronically before the visit or safely viewing and ingesting studies shared electronically by a patient.</li>
+    <li>Set up routine ways to use outside images without asking for a disc: pull prior studies electronically before a visit, and give care teams a safe way to view and use studies that patients share electronically.</li>
   </ul>
 </div>
 
 <div class="role">
-  <h3 id="req-authorization-server">Authorization server</h3>
-  <p class="what">Often part of an EHR or patient portal, or a separate identity or access service.</p>
+  <h3 id="req-authorization-server">Authorization servers</h3>
+  <p class="what">Health IT including EHRs, patient portals, and identity services.</p>
   <ul>
-    <li><b>User-authorized access (required):</b> Let patients and clinicians authorize apps for imaging access (<code>patient/ImagingStudy.rs</code> required; <code>user/ImagingStudy.rs</code> recommended), signing in directly or via CMS-aligned networks and digital identity credentials.</li>
-    <li>Publish the imaging server's location in the SMART configuration information the server provides to clients.</li>
-    <li>Confirm to the imaging server what each client is allowed to see.</li>
-    <li><b>Automated system-to-system access (optional and encouraged):</b> Support pre-authorized systems that run with no user present (<code>system/ImagingStudy.rs</code>), such as a referral service retrieving priors for treatment against the same imaging server. In January 2027 sandbox testing, participants may begin testing with either mode while working toward the full role requirements.</li>
+    <li><b>Patient-authorized access (required):</b> Let patients authorize apps for imaging access with <code>patient/ImagingStudy.rs</code>, signing in directly or through CMS-aligned networks and digital identity credentials. Systems that also launch point-of-care clinician apps within the organization should support <code>user/ImagingStudy.rs</code>.</li>
+    <li><b>System-to-system access for treatment (optional and encouraged):</b> Support pre-authorized systems that run with no user present using <code>system/ImagingStudy.rs</code> or network-level assertions, so outside providers and referral services can retrieve permitted prior studies for treatment without clinician user accounts at the source site. In January 2027 sandbox testing, participants may start with either mode.</li>
+    <li>Let the imaging server validate access tokens to confirm the requester, patient context, and granted scopes, along with any study-level permissions or access rules the authorization server manages.</li>
   </ul>
 </div>
 
 <div class="role">
-  <h3 id="req-imaging-server">Imaging server</h3>
-  <p class="what">A service in front of an image archive, an archive with these interfaces built in, a cloud imaging platform, or an EHR's imaging module.</p>
+  <h3 id="req-imaging-server">Imaging servers and archives</h3>
+  <p class="what">Imaging systems including PACS, VNAs, cloud services, and EHR imaging modules.</p>
   <ul>
+    <li>Publish <code>.well-known/smart-configuration</code> at the imaging FHIR base URL, advertising <code>smart-imaging-access</code> and the authorization server. When paired with a separate clinical FHIR endpoint, also advertise the imaging server in that endpoint's <code>associated_endpoints</code>.</li>
     <li>List a patient's studies using FHIR <code>ImagingStudy</code>.</li>
-    <li>Return full-fidelity DICOM objects through DICOMweb WADO-RS for a whole study, a series, or a single image.</li>
-    <li>Rendered images and previews are optional.</li>
-    <li>Check the permission on every request, and release only the studies the authorization server confirms each client is allowed to see. The <a href="https://build.fhir.org/ig/argonautproject/smart-imaging/authorization-patterns.html" target="_blank" rel="noopener">specification describes ways</a> to divide this work between an authorization server, an imaging server, and an image archive.</li>
+    <li>Return full-fidelity DICOM objects through DICOMweb WADO-RS for a whole study, a series, or a single instance. Rendered images and previews are optional.</li>
+    <li>Validate the access token on every request and release only the studies the requester is permitted to see, applying policy from the authorization server, the imaging server's own rules, or both. The <a href="https://build.fhir.org/ig/argonautproject/smart-imaging/authorization-patterns.html" target="_blank" rel="noopener">specification describes ways</a> to divide this work.</li>
+    <li>When a separate archive such as a PACS or VNA sits behind the imaging server, it can participate by supplying studies and full-fidelity DICOM objects to the imaging server over a backend DICOMweb connection. Apps never connect to a separate archive directly.</li>
   </ul>
 </div>
 
 <div class="role">
-  <h3 id="req-image-archive">Image archive</h3>
-  <p class="what">A PACS, vendor-neutral archive, or cloud archive that supplies an imaging server instead of serving apps itself. In the pledge, this is part of the imaging server and archive role.</p>
+  <h3 id="req-client">Clients</h3>
+  <p class="what">Software including patient apps, clinical apps, and referral services.</p>
   <ul>
-    <li>Let the imaging server search for studies and retrieve full-fidelity DICOM objects through DICOMweb.</li>
-    <li>The imaging server and the archive arrange their own connection and credentials. Apps never connect to a separate archive directly.</li>
-  </ul>
-</div>
-
-<div class="role">
-  <h3 id="req-client">Client</h3>
-  <p class="what">A patient's app, a clinician's point-of-care or registry app, a clinical intake tool, or a referral service.</p>
-  <ul>
-    <li>Find the imaging server from the authorization server's configuration, or use a configured address.</li>
+    <li>Find the imaging server and its authorization server through <code>.well-known/smart-configuration</code> or <code>associated_endpoints</code>, or use a configured address.</li>
     <li>Download a full study, then display it, use it at the point of care, import it before a visit, or give it to the patient.</li>
-    <li>For patient apps, let patients re-share what they retrieve, for example with a time-limited, revocable link or QR code.</li>
     <li>Wait and retry when the imaging server asks, and search again if a download is refused.</li>
   </ul>
 </div>
