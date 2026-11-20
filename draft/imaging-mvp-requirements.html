@@ -1,0 +1,159 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Diagnostic Imaging · Proposed CMS HTE MVP Requirements</title><style>
+:root{color:#192f40;background:#f5f8fa;font:17px/1.55 system-ui,sans-serif}body{margin:0}main{box-sizing:border-box;max-width:960px;margin:auto;background:white;padding:clamp(20px,5vw,68px);border-top:6px solid #146780}h1,h2{line-height:1.18;color:#12364b}h1{font-size:clamp(30px,4vw,46px);margin:0}h1+p{color:#526574;font-size:.9em;margin-bottom:2em}h2{margin-top:1.7em}h3{margin:1.4em 0 .4em;color:#12364b}table{border-collapse:collapse;width:100%;font-size:.95em}th,td{text-align:left;vertical-align:top;padding:.8em;border-bottom:1px solid #d2dce1}th{background:#ebf2f4}td:first-child{width:26%;font-weight:600}code{font-size:.89em;overflow-wrap:anywhere}a{color:#075b78}@media print{main{padding:0;border:0}tr{break-inside:avoid}h2{break-after:avoid}}
+</style></head><body><main><h1 id="diagnostic-imaging-mvp-requirements">Diagnostic imaging MVP
+requirements</h1>
+<p>Proposed for workgroup and CMS review · November 20, 2026</p>
+<p>The aim of the imaging MVP is for patients and care teams to access
+complete, full-fidelity imaging studies through apps and other software
+clients of their choice.</p>
+<h2 id="proposed-requirements-by-role">Proposed requirements by
+role</h2>
+<p>Each participant implements the roles it performs. The MVP covers
+retrieval from a known source through the SMART Imaging Access API. As
+CMS-aligned networks make clinical records available, the same imaging
+API can serve requests authorized through those networks.</p>
+<h3 id="providers">Providers</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Images and reports</td>
+<td>Make full-fidelity images available through the imaging server and
+reports through the clinical system. Where possible, include the Study
+Instance UID or accession number in the report so clients can match the
+two.</td>
+</tr>
+<tr>
+<td>Outside studies</td>
+<td>Give care teams a routine way to retrieve prior scans before a visit
+and to safely view and use studies patients share.</td>
+</tr>
+<tr>
+<td>Production access</td>
+<td>Set a target date for making images available to patients and care
+teams.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="authorization-servers">Authorization servers</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Patient access</td>
+<td>Let patients grant an app of their choice access to their imaging
+studies through their existing provider.</td>
+</tr>
+<tr>
+<td>Clinician access</td>
+<td>Systems that launch clinician apps within the organization should
+also support imaging access for those apps.</td>
+</tr>
+<tr>
+<td>Automated treatment requests (optional, encouraged)</td>
+<td>Authorize pre-approved outside providers and referral services to
+retrieve permitted studies for treatment.</td>
+</tr>
+<tr>
+<td>Permission checks</td>
+<td>Let the imaging server validate the token and confirm the requester,
+patient, granted permissions, and any study restrictions the
+authorization server manages.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="imaging-servers-and-archives">Imaging servers and archives</h3>
+<p>Imaging networks, PACS, vendor-neutral archives, cloud services, and
+EHR imaging modules can serve as imaging servers. A separate archive can
+supply studies to the imaging server over DICOMweb.</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Service discovery</td>
+<td>Publish the imaging and authorization service information through
+SMART discovery. When a separate clinical FHIR endpoint is the entry
+point, identify the imaging server there.</td>
+</tr>
+<tr>
+<td>Study search and retrieval</td>
+<td>List permitted studies through FHIR ImagingStudy. Deliver complete
+studies, individual series, or individual instances through DICOMweb at
+the fidelity retained by the archive.</td>
+</tr>
+<tr>
+<td>Access controls</td>
+<td>Validate the access token on every request and apply both the
+granted permissions and local access rules. Support patient-chosen apps
+without requiring a separate business agreement for each app.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="apps-and-other-clients">Apps and other clients</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Study retrieval</td>
+<td>Discover the servers or use a configured address, obtain
+authorization, find a permitted study, and download it in full.</td>
+</tr>
+<tr>
+<td>Use of images</td>
+<td>Patient apps let patients view and share their images. Treatment
+uses include reviewing a study during a visit and retrieving prior scans
+for a referral.</td>
+</tr>
+<tr>
+<td>Delayed or refused downloads</td>
+<td>Retry after the requested delay. If the server refuses a download,
+search again for the studies available to the app.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="testing-and-deployment">Testing and deployment</h2>
+<p>Every participant hosts or joins at least one public sandbox and
+takes part in a demonstration there. A sandbox is a shared test
+environment where teams connect their systems using synthetic patients
+and realistic imaging studies.</p>
+<ol type="1">
+<li><strong>Prepare the servers.</strong> Authorization and imaging
+server teams test their endpoints and make them available to other
+participants. Imaging servers supply sample CT, MRI, and X-ray
+studies.</li>
+<li><strong>January 2027 milestone.</strong> Developers of apps and
+other clients connect to another team’s server in a sandbox and
+demonstrate retrieval of a complete study using patient authorization or
+a pre-authorized treatment request.</li>
+<li><strong>Test at provider sites.</strong> Server and client teams
+deploy the software in each participating provider’s test environment.
+Care teams test the workflow, and the provider verifies that its access
+rules are enforced.</li>
+</ol>
+<p>For protocol details and testing resources, see the <a
+href="https://ditch-the-disk.github.io/draft/mvp.html#requirements">workgroup
+MVP and testing plan</a>, <a
+href="https://build.fhir.org/ig/argonautproject/smart-imaging/">SMART
+Imaging Access implementation guide</a>, and <a
+href="https://imaging.argo.run/">reference sandbox</a>.</p>
+</main></body></html>
